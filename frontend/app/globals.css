@@ -139,10 +139,21 @@ input::placeholder {
   opacity: 1;
 }
 
-textarea{
-  outline: none;
-  border: none;
-}
+textarea {
+    outline: none;
+    border: none;
+    resize: none;
+    scrollbar-width: thin;
+    scrollbar-color: #64748b transparent;
+  }
+
+  textarea::-webkit-scrollbar {
+    width: 6px;
+  }
+  textarea::-webkit-scrollbar-thumb {
+    background-color: #64748b;
+    border-radius: 10px;
+  }
 
 button {
   outline: none;
@@ -208,7 +219,7 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .account-nav::-webkit-scrollbar {
-  width: 4px;
+  width: 4px !important;
 }
 .account-nav::-webkit-scrollbar-track {
   background: initial;
@@ -217,6 +228,37 @@ body::-webkit-scrollbar-thumb:hover {
   background: rgb(100, 100, 100);
   border-radius: 10px;
   transition: all 300ms;
+}
+
+/* -------------------------------------------------------
+    Question Slider Scrollbar
+------------------------------------------------------- */
+.question-slider-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.question-slider-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.question-slider-scroll::-webkit-scrollbar-thumb {
+  background: rgba(173, 173, 173, 0.5);
+  border-radius: 10px;
+  transition: all 300ms ease;
+}
+
+.question-slider-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(105, 112, 124, 0.8);
+}
+
+.dark .question-slider-scroll::-webkit-scrollbar-thumb {
+  background: rgba(40, 50, 62, 0.8);
+}
+
+.dark .question-slider-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(25, 14, 180, 0.8);
 }
 
 /* Utilities */
@@ -259,8 +301,10 @@ body::-webkit-scrollbar-thumb:hover {
          border-l-2 border-l-transparent transition-all;
 }
 
-.active-menu {
-  @apply text-sky-500 bg-sky-500/10 border-l-sky-500;
+
+
+.menu-container > li > .active-menu {
+  @apply text-sky-500 bg-sky-500/10 border-l-4 border-sky-500;
 }
 
 /* Input  */
@@ -290,7 +334,7 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .input-info {
-  @apply w-full px-4! py-3! rounded-xl border! border-custom-gray-200! dark:border-white/10! bg-light dark:bg-dark-600! text-gray-800 dark:text-white focus:border-violet-500! focus:ring-2! dark:focus:ring-violet-500/20! transition-all;
+  @apply w-full px-4! py-2! rounded-xl text-sm! dark:text-text-on-dark border! border-custom-gray-200! dark:border-white/10! bg-light! dark:bg-dark-600! focus:border-violet-500! focus:ring-2! dark:focus:ring-violet-500/20! transition-all;
 }
 .checkbox svg {
   stroke-linecap: round;
@@ -410,4 +454,23 @@ body::-webkit-scrollbar-thumb:hover {
 
 .gallery-menu-item.selected {
   @apply bg-ui-blue-600 text-white shadow-inner;
+}
+
+/* --------------------------------------- Review Reply Smooth Dropdown ----------------------------------------- */
+.review-reply-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.review-reply-collapse.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+}
+
+.review-reply-wrapper {
+  overflow: hidden;
 }

@@ -13,7 +13,7 @@ interface InputProps {
   onInputHandler: (id: string, value: any, isValid: boolean) => void;
   elem?: "input" | "textarea";
   allInputs?: any;
-  children?: ReactNode; // get eye icon as children from secureInput
+  children?: ReactNode;
 }
 
 const inputReducer = (state: any, action: any) => {
@@ -72,8 +72,6 @@ export default function ValidationInput({
     return () => clearTimeout(timer);
   }, [validations, allInputs, touched]);
 
-  // dynamic styling based on validation state
-  // استایل‌ها روی باکس والد (Wrapper) اعمال می‌شوند تا تداخلی با استایل سراسری اینپوت نداشته باشند
   const statusClass = touched
     ? isValid
       ? "border-green-500 bg-green-500/5 ring-1 ring-green-500/20" 
@@ -85,14 +83,12 @@ export default function ValidationInput({
     value,
     onChange: onChangeHandler,
     placeholder,
-    // استفاده از border-none! و ring-0! برای خنثی کردن استایل‌های احتمالی روی خودِ تگ اینپوت
     className: `w-full bg-transparent outline-none border-none! ring-0! py-3 px-4 transition-all duration-200 ${className}`,
     ref: inputRef,
   };
 
   return (
     <div className="w-full">
-      {/* Wrapper: این باکس وظیفه نمایش بردر و وضعیت‌ها را دارد */}
       <div className={`relative w-full border rounded-xl transition-all duration-300 ${statusClass}`}>
         {elem === "textarea" ? (
           <textarea {...(commonProps as any)} rows={4} />

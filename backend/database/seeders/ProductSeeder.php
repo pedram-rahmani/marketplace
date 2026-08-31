@@ -3,115 +3,82 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-
 use App\Models\Product\Category;
 use App\Models\Product\Product;
 use App\Models\Product\ProductFeature;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
 {
     public function run()
     {
-        // 1. دریافت دسته‌بندی‌ها
-        $electronics = Category::where('slug', 'electronics')->firstOrFail();
-        $appliances  = Category::where('slug', 'appliances')->firstOrFail();
-        $clothing    = Category::where('slug', 'clothing')->firstOrFail();
-        $furniture   = Category::where('slug', 'furniture')->firstOrFail();
-        $homeKitchen   = Category::where('slug', 'home-kitchen')->firstOrFail();
-        $audioVisual   = Category::where('slug', 'audio-visual')->firstOrFail();
+        \Illuminate\Support\Facades\Log::info('Categories in DB:', \App\Models\Product\Category::pluck('name')->toArray());
+  
+        Schema::disableForeignKeyConstraints();
+        DB::table('product_specifications')->truncate();
+        DB::table('product_colors')->truncate();
+        Product::truncate();
+        Schema::enableForeignKeyConstraints();
 
-        // --- بخش الکترونیک ---
-        $screenFeature = ProductFeature::firstOrCreate(['category_id' => $electronics->id, 'title' => 'صفحه‌نمایش']);
-        $ramFeature    = ProductFeature::firstOrCreate(['category_id' => $electronics->id, 'title' => 'حافظه رم']);
+        // دریافت دسته‌بندی‌ها بر اساس نام دقیق
+        $categories = Category::all()->keyBy('name');
 
-        $phone = Product::create([
-            'name' => 'گوشی هوشمند TechGear Pro',
-            'description' => 'پرچمدار جدید با صفحه نمایش فوق‌العاده و سخت‌افزار قدرتمند.',
-            'price' => 64000000,
-            'category_id' => $electronics->id,
-            'img' => '/images/products/2.png',
-        ]);
+        // تابع کمکی برای ایجاد محصول
+        $createProduct = function($catName, $name, $desc, $price, $img) use ($categories) {
+            $cat = $categories->get($catName);
+            if (!$cat) return null;
 
-        $phone->colors()->createMany([['name' => 'مشکی', 'hex' => '#1A1A1A'], ['name' => 'نقره‌ای', 'hex' => '#E5E5E5']]);
-        $phone->specifications()->createMany([
-            ['feature_id' => $screenFeature->id, 'value' => '6.7" AMOLED'],
-            ['feature_id' => $ramFeature->id, 'value' => '12GB'],
-        ]);
+            return Product::create([
+                'name'        => $name,
+                'slug'        => Str::slug($name, '-', 'fa') . '-' . uniqid(),
+                'description' => $desc,
+                'price'       => $price,
+                'category_id' => $cat->id,
+                'img'         => $img,
+            ]);
+        };
 
+        // --- بخش الکترونیک (دیجیتال) ---
+        if ($phone = $createProduct('دیجیتال', 'گوشی هوشمند TechGear Pro', 'پرچمدار جدید با صفحه نمایش فوق‌العاده و سخت‌افزار قدرتمند.', 64000000, '/images/products/2.png')) {
+            $f1 = ProductFeature::firstOrCreate(['category_id' => $phone->category_id, 'title' => 'صفحه‌نمایش']);
+            $f2 = ProductFeature::firstOrCreate(['category_id' => $phone->category_id, 'title' => 'حافظه رم']);
+            $phone->colors()->createMany([['name' => 'مشکی', 'hex' => '#1A1A1A'], ['name' => 'نقره‌ای', 'hex' => '#E5E5E5']]);
+            $phone->specifications()->createMany([['feature_id' => $f1->id, 'value' => '6.7" AMOLED'], ['feature_id' => $f2->id, 'value' => '12GB']]);
+        }
 
         // --- بخش لوازم خانگی ---
-        $pressureFeature = ProductFeature::firstOrCreate(['category_id' => $homeKitchen->id, 'title' => 'فشار بخار']);
-        $espresso = Product::create([
-            'name' => 'اسپرسوساز کافه باریستا',
-            'description' => 'تجربه نوشیدن یک قهوه اصیل در خانه.',
-            'price' => 8900000,
-            'category_id' => $homeKitchen->id,
-            'img' => '/images/products/3.png',
-        ]);
-        $espresso->specifications()->createMany([['feature_id' => $pressureFeature->id, 'value' => '20 Bar']]);
+        if ($espresso = $createProduct('خانه و آشپزخانه', 'اسپرسوساز کافه باریستا', 'تجربه نوشیدن یک قهوه اصیل در خانه.', 8900000, '/images/products/3.png')) {
+            $f = ProductFeature::firstOrCreate(['category_id' => $espresso->category_id, 'title' => 'فشار بخار']);
+            $espresso->specifications()->createMany([['feature_id' => $f->id, 'value' => '20 Bar']]);
+        }
 
         // --- بخش پوشاک ---
-        $usageFeature = ProductFeature::firstOrCreate(['category_id' => $clothing->id, 'title' => 'نوع کاربری']);
-
-        $shoes = Product::create([
-            'name' => 'کفش ورزشی CloudWalkers',
-            'description' => 'طراحی ارگونومیک مخصوص دویدن.',
-            'price' => 2450000,
-            'category_id' => $clothing->id,
-            'img' => '/images/products/4.png',
-        ]);
-        $shoes->specifications()->createMany([['feature_id' => $usageFeature->id, 'value' => 'Running']]);
+        if ($shoes = $createProduct('پوشاک و مد', 'کفش ورزشی CloudWalkers', 'طراحی ارگونومیک مخصوص دویدن.', 2450000, '/images/products/4.png')) {
+            $f = ProductFeature::firstOrCreate(['category_id' => $shoes->category_id, 'title' => 'نوع کاربری']);
+            $shoes->specifications()->createMany([['feature_id' => $f->id, 'value' => 'Running']]);
+        }
 
         // --- بخش مبلمان ---
-        $styleFeature = ProductFeature::firstOrCreate(['category_id' => $furniture->id, 'title' => 'سبک طراحی']);
-        $materialFeature = ProductFeature::firstOrCreate(['category_id' => $furniture->id, 'title' => 'جنس بدنه']);
-        $shapeFeature = ProductFeature::firstOrCreate(['category_id' => $furniture->id, 'title' => 'شکل میز']);
+        if ($chair = $createProduct('مبلمان', 'صندلی نوردیک بلوط', 'صندلی تمام چوب مینیمال و شیک.', 4200000, '/images/products/1.png')) {
+            $f1 = ProductFeature::firstOrCreate(['category_id' => $chair->category_id, 'title' => 'سبک طراحی']);
+            $f2 = ProductFeature::firstOrCreate(['category_id' => $chair->category_id, 'title' => 'جنس بدنه']);
+            $chair->specifications()->createMany([['feature_id' => $f1->id, 'value' => 'Minimalist'], ['feature_id' => $f2->id, 'value' => 'Solid Oak Wood']]);
+        }
 
-        // محصول 1: صندلی
-        $chair = Product::create([
-            'name' => 'صندلی نوردیک بلوط',
-            'description' => 'صندلی تمام چوب مینیمال و شیک.',
-            'price' => 4200000,
-            'category_id' => $furniture->id,
-            'img' => '/images/products/1.png',
-        ]);
-        $chair->specifications()->createMany([
-            ['feature_id' => $styleFeature->id, 'value' => 'Minimalist'],
-            ['feature_id' => $materialFeature->id, 'value' => 'Solid Oak Wood'],
-        ]);
+        if ($table = $createProduct('مبلمان', 'میز ناهارخوری مدرن شش نفره', 'میز با صفحه ضد خش و طراحی ارگونومیک.', 12500000, '/images/products/5.png')) {
+            $f1 = ProductFeature::firstOrCreate(['category_id' => $table->category_id, 'title' => 'سبک طراحی']);
+            $f2 = ProductFeature::firstOrCreate(['category_id' => $table->category_id, 'title' => 'شکل میز']);
+            $table->colors()->createMany([['name' => 'گردویی', 'hex' => '#4B3621']]);
+            $table->specifications()->createMany([['feature_id' => $f1->id, 'value' => 'Modern'], ['feature_id' => $f2->id, 'value' => 'Rectangular']]);
+        }
 
-        // محصول 2: میز
-        $table = Product::create([
-            'name' => 'میز ناهارخوری مدرن شش نفره',
-            'description' => 'میز با صفحه ضد خش و طراحی ارگونومیک.',
-            'price' => 12500000,
-            'category_id' => $furniture->id,
-            'img' => '/images/products/5.png',
-        ]);
-        $table->colors()->createMany([['name' => 'گردویی', 'hex' => '#4B3621']]);
-        $table->specifications()->createMany([
-            ['feature_id' => $styleFeature->id, 'value' => 'Modern'],
-            ['feature_id' => $shapeFeature->id, 'value' => 'Rectangular'],
-        ]);
-
-
-        // صوتی و تصویری (Audio-Visual) - اضافه کردن محصول تلویزیون
-        $resolutionFeature = ProductFeature::firstOrCreate(['category_id' => $audioVisual->id, 'title' => 'رزولوشن']);
-        $screenSizeFeature = ProductFeature::firstOrCreate(['category_id' => $audioVisual->id, 'title' => 'سایز صفحه']);
-
-        // ساخت محصول تلویزیون
-        $tv = Product::create([
-            'name' => 'تلویزیون هوشمند 55 اینچ 4K',
-            'description' => 'تجربه سینمایی در خانه با کیفیت تصویر فوق‌العاده.',
-            'price' => 28500000,
-            'category_id' => $audioVisual->id,
-            'img' => '/images/products/6.png',
-        ]);
-
-        // افزودن مشخصات فنی
-        $tv->specifications()->createMany([
-            ['feature_id' => $resolutionFeature->id, 'value' => '4K Ultra HD'],
-            ['feature_id' => $screenSizeFeature->id, 'value' => '55 Inch'],
-        ]);
+        // --- بخش صوتی و تصویری ---
+        if ($tv = $createProduct('صوتی و تصویری', 'تلویزیون هوشمند 55 اینچ 4K', 'تجربه سینمایی در خانه با کیفیت تصویر فوق‌العاده.', 28500000, '/images/products/6.png')) {
+            $f1 = ProductFeature::firstOrCreate(['category_id' => $tv->category_id, 'title' => 'رزولوشن']);
+            $f2 = ProductFeature::firstOrCreate(['category_id' => $tv->category_id, 'title' => 'سایز صفحه']);
+            $tv->specifications()->createMany([['feature_id' => $f1->id, 'value' => '4K Ultra HD'], ['feature_id' => $f2->id, 'value' => '55 Inch']]);
+        }
     }
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 
 export default function ProductSorting() {
@@ -25,7 +27,7 @@ export default function ProductSorting() {
   return (
     <>
       {/* desktop version */}
-      <div className="hidden md:flex items-center justify-between px-6 mb-8 h-16 backdrop-blur-xl border border-custom-gray-200 bg-white/30 dark:bg-white/5 dark:border-white/10 shadow rounded-2xl z-10">
+      <div className="hidden md:flex items-center justify-between px-6 mb-8 h-16 backdrop-blur-xl border border-custom-gray-200 bg-light dark:bg-dark-600/50 dark:border-white/10 shadow rounded-2xl z-10">
         {/* Search Bar */}
         <div className="flex items-center gap-2 bg-custom-gray-400/30 dark:bg-dark-800/60 w-64 border border-white/10 rounded-xl px-4 py-2 focus-within:ring-1 focus-within:ring-ui-purple/30">
           <input

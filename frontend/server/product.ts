@@ -1,6 +1,6 @@
 import { ProductSummary } from "@/types/product";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://192.168.x.x:8000";
 const ASSET_URL = process.env.NEXT_PUBLIC_ASSET_URL || "http://127.0.0.1:8000";
 
 export async function getProducts(params?: { 
@@ -24,11 +24,13 @@ export async function getProducts(params?: {
     if (!res.ok) return [];
 
     const json = await res.json();
-    
-    // نکته مهم: اگر در دیتابیس مسیر عکس فقط نام فایل است، اینجا آن را با ASSET_URL ترکیب کنید
-    return (json.products || []).map((p: any) => ({
+  
+    const products = json.data || json.products || [];
+
+    return products.map((p: any) => ({
       ...p,
-      img: p.img ? `${ASSET_URL}/storage/${p.img}` : null
+
+      img: p.img ? (p.img.startsWith('http') ? p.img : `${ASSET_URL}/storage/${p.img}`) : null
     }));
   } catch (error) {
     console.error("Fetch Products Error:", error);
@@ -41,7 +43,8 @@ export async function getCategories() {
     const res = await fetch(`${API_BASE_URL}/categories`, { cache: "no-store" });
     if (!res.ok) return [];
     const data = await res.json();
-    return data.categories || [];
+    // بسته به اینکه API شما برای دسته‌بندی‌ها چه ساختاری دارد، این را تنظیم کنید
+    return data.categories || data.data || [];
   } catch (error) {
     console.error("Fetch Categories Error:", error);
     return [];

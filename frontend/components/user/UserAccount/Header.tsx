@@ -56,7 +56,6 @@ export default function Header() {
             </svg>
           </button>
           
-          {/* BasketModal دیگر نیازی به ref ندارد چون parent آن یعنی div با basketRef کنترل می‌شود */}
           <BasketModal showBasket={showBasket} />
         </div>
 

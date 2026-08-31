@@ -1,13 +1,19 @@
+// types/user.ts
 export interface User {
   id: number;
   name: string;
   email: string;
   username: string;
-  role: "admin" | "co-admin" | "user";
+  phone?: string;
+  role: "admin" | "co-admin" | "user" | string;
   permissions?: string[];
+  status?: "active" | "banned" | string;
+  admin_notes?: string;
   api_token?: string;
   created_at?: string;
   updated_at?: string;
+  deleted_at?: string;
+  [key: string]: any;
 }
 
 export interface AuthResponse {
@@ -16,7 +22,7 @@ export interface AuthResponse {
 }
 
 export interface LoginPayload {
-  identifier: string; // email or username
+  identifier: string;
   password: string;
 }
 

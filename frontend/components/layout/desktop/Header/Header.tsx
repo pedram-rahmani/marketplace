@@ -1,11 +1,12 @@
 "use client";
+
 import { useState, useEffect, useRef } from "react";
 import Navbar from "./Navbar";
 import HeaderActions from "./HeaderActions";
-import { DBMenuItem } from "@/types/dbMenu";
+import { Category } from "@/types/category";
 
 interface HeaderProps {
-  menuItems: DBMenuItem[];
+  menuItems: Category[];
 }
 
 export default function Header({ menuItems }: HeaderProps) {
@@ -14,11 +15,7 @@ export default function Header({ menuItems }: HeaderProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 30) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 30);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -30,7 +27,7 @@ export default function Header({ menuItems }: HeaderProps) {
       ref={headerRef}
       className={`header ${isScrolled ? "sticky-header" : ""}`}
     >
-      <div className="hidden md:flex items-center justify-between mx-auto max-w-480 h-24 px-4 lg:px-12 transition-all">
+      <div className="hidden lg:flex items-center justify-between mx-auto w-full h-24 px-4 lg:px-12 transition-all">
         <Navbar menuItems={menuItems} />
         <HeaderActions />
       </div>

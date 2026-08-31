@@ -1,16 +1,15 @@
 "use client";
 
-import { DBMenuItem } from "@/types/dbMenu";
+import { Category } from "@/types/category";
 import Link from "next/link";
-import { ReactNode, useRef, useEffect, memo } from "react";
+import { useRef, useEffect, memo } from "react";
 
 interface MenuItemProps {
-  item: DBMenuItem;
+  item: Category;
   onHover?: () => void;
   isActive: boolean;
   isLastLevel: boolean;
-  menuItems: DBMenuItem[];
-  children?: ReactNode;
+  menuItems: Category[];
   maxLevel: number;
 }
 
@@ -20,13 +19,10 @@ const MenuItem = ({
   isActive,
   isLastLevel,
   menuItems,
-  children,
   maxLevel,
 }: MenuItemProps) => {
-  // Ref to store the timeout ID for hover delay management
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Clear timeout when component unmounts to prevent memory leaks
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -34,35 +30,32 @@ const MenuItem = ({
   }, []);
 
   const hasChildren = menuItems.some(
-    (menuItem) => menuItem.parent_id === item.id
+    (menuItem) => menuItem.parent_id === item.id,
   );
-  
+
   const childCount = menuItems.filter(
-    (menuItem) => menuItem.parent_id === item.id
+    (menuItem) => menuItem.parent_id === item.id,
   ).length;
 
-  // Calculate href based on category level and children count
   let href = "#";
   if (item.parent_id === null) {
-    href = maxLevel === 2
+    href =
+      maxLevel === 2
         ? `/search/category-${item.name}`
-        : `/landing/${item.name}`;
+        : `/search/${item.name}`;
   } else if (childCount > 0) {
     href = `/search/category-${item.id}`;
   } else {
     href = `/product-info/${item.id}/${item.name}`;
   }
 
-  // Handle mouse enter with a short 100ms debounce delay
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
     timeoutRef.current = setTimeout(() => {
       if (onHover) onHover();
     }, 100);
   };
 
-  // Cancel the pending hover action if the mouse leaves before delay ends
   const handleMouseLeave = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -70,50 +63,42 @@ const MenuItem = ({
     }
   };
 
-  // Inside your MenuItem return statement:
-
-return (
-  <li 
-    className="group h-10 relative" // Added relative for positioning safety
-    onMouseEnter={handleMouseEnter}
-    onMouseLeave={handleMouseLeave}
-  >
-    <Link
-      href={href}
-      className={`nav-menu-it-a ${isActive ? "active-menu" : ""}`}
+  return (
+    <li
+      className="relative w-full"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {item.name}
-      {hasChildren && !isLastLevel &&  <ArrowIcon isActive={isActive} />}
-    </Link>
-
-    {/* Wrapper for the sub-menu with subtle animation */}
-    {isActive && children && (
-      <div className="absolute top-full left-0 animate-[menu-entry]">
-        {children}
-      </div>
-    )}
-  </li>
-);
+      <Link
+        href={href}
+        className={`
+          flex items-center justify-between w-full px-4 py-3 text-sm transition-all duration-200
+          ${
+            isActive
+              ? "text-sky-500 bg-sky-500/10 border-r-4 shadow-sm border-sky-500 font-medium"
+              : "text-text-on-light/90 dark:text-text-on-dark/90 border-r-4 border-transparent hover:text-sky-500 "
+          }
+        `}
+      >
+        {item.name}
+        {hasChildren && !isLastLevel && <ArrowIcon isActive={isActive} />}
+      </Link>
+    </li>
+  );
 };
 
-// Use memo to prevent unnecessary re-renders in large menu lists
 export default memo(MenuItem);
 
-interface ArrowIconProps {
-  isActive: boolean;
-}
-
-const ArrowIcon = ({ isActive }: ArrowIconProps) => (
+const ArrowIcon = ({ isActive }: { isActive: boolean }) => (
   <svg
     viewBox="0 0 24 24"
-    className={`size-3.5! ${isActive ? "rotate-90 transition-all duration-200" : ""}`}
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className={`size-4! transition-transform duration-200 ${isActive ? "rotate-90" : "rotate-0"}`}
   >
     <path
-      fill="none"
-      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth="2"
       d="m19.5 8.25-7.5 7.5-7.5-7.5"
     />
   </svg>

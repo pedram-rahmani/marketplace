@@ -3,23 +3,39 @@
 import { useAuth } from "@/store/hooks/useAuth";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axiosInstance";
-import { SkeletonCard } from "@/components/ui/Skeletons/Skeletons";
+import DashboardGreeting from "@/components/user/UserAccount/dashboard/DashboardGreeting";
+import DashboardStatsGrid from "@/components/user/UserAccount/dashboard/DashboardStatsGrid";
+import UserInfoCard from "@/components/user/UserAccount/dashboard/UserInfoCard";
+import EditProfileModal from "@/components/user/UserAccount/dashboard/EditProfileModal";
+
+interface DashboardStats {
+  order_count: number;
+  ticket_count: number;
+  wallet_balance: number;
+}
 
 export default function Page() {
   const { user } = useAuth();
 
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<DashboardStats>({
     order_count: 0,
     ticket_count: 0,
     wallet_balance: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [userData, setUserData] = useState(user);
+
+  useEffect(() => {
+    if (user) setUserData(user);
+  }, [user]);
 
   useEffect(() => {
     axiosInstance
       .get("/dashboard-stats")
       .then((res) => {
-        setStats(res.data);
+        setStats(res.data.stats || res.data);
       })
       .catch((err) => {
         console.error("خطا در دریافت آمار:", err);
@@ -29,55 +45,82 @@ export default function Page() {
       });
   }, []);
 
-  return (
-    <div className="p-6 space-y-6">
-      {/* greeting */}
-      <div className="bg-white/70 dark:bg-custom-gray-400/10 p-6 rounded-2xl border border-custom-gray-400 dark:border-custom-gray-400/20">
-        <h1 className="text-2xl font-bold ">
-          سلام {(user as any)?.user?.name || user?.name || "کاربر عزیز"} 👋
-        </h1>
-        <p className="text-text-on-light/60 dark:text-text-on-dark/50 mt-2">
-          به پنل کاربری خود خوش آمدید.
-        </p>
-      </div>
+  const userName =
+    (userData as any)?.user?.name || userData?.name || "کاربر عزیز";
+  const userPhone = 
+    (userData as any)?.user?.phone || 
+    (userData as any)?.phone || 
+    (userData as any)?.addresses?.[0]?.phone || "";
+    
+  const userEmail = (userData as any)?.user?.email || userData?.email || "";
+  
+  // استخراج هوشمند آدرس پیش‌فرض از جدول addresses یا سایر فیلدهای احتمالی
+  const rawAddresses = (userData as any)?.addresses || (userData as any)?.user?.addresses;
+  const defaultAddressObj = 
+    Array.isArray(rawAddresses) 
+      ? (rawAddresses.find((addr: any) => addr.is_default === true || addr.is_default === 1) || rawAddresses[0])
+      : null;
 
-      {/* summary cards */}
-      {loading ? (
-        // sceleton cards
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-      ) : (
-        // show the real cards when data is loaded
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <DashboardCard
-            title="سفارشات من"
-            value={`${stats.order_count} مورد`}
-          />
-          <DashboardCard
-            title="تیکت‌های فعال"
-            value={`${stats.ticket_count} مورد`}
-          />
-          <DashboardCard
-            title="کیف پول"
-            value={`${stats.wallet_balance.toLocaleString()} تومان`}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
+  const userAddress =
+    defaultAddressObj?.postal_address ||
+    (userData as any)?.user?.postal_address ||
+    (userData as any)?.postal_address ||
+    "";
+    
 
-// cards component
-function DashboardCard({ title, value }: { title: string; value: string }) {
+  // بروزرسانی آنی استیت بعد از ویرایش موفق
+  const handleUpdateSuccess = (updatedFields: any) => {
+    setUserData((prev: any) => {
+      const targetUser = prev?.user || prev;
+      const updatedUser = { ...targetUser, ...updatedFields };
+      
+      // آپدیت کردن آدرس درون آرایه addresses در صورت وجود
+      let updatedAddresses = targetUser.addresses ? [...targetUser.addresses] : [];
+      if (updatedFields.postal_address || updatedFields.phone) {
+        if (updatedAddresses.length > 0) {
+          updatedAddresses[0] = {
+            ...updatedAddresses[0],
+            postal_address: updatedFields.postal_address ?? updatedAddresses[0].postal_address,
+            phone: updatedFields.phone ?? updatedAddresses[0].phone,
+          };
+        } else {
+          updatedAddresses.push({
+            postal_address: updatedFields.postal_address,
+            phone: updatedFields.phone,
+            is_default: true,
+          });
+        }
+      }
+
+      return {
+        ...prev,
+        user: { ...updatedUser, addresses: updatedAddresses },
+        addresses: updatedAddresses,
+        postal_address: updatedFields.postal_address ?? prev?.postal_address,
+      };
+    });
+  };
+
   return (
-    <div className="bg-white/70 dark:bg-custom-gray-400/10 p-4 rounded-xl border border-custom-gray-400 dark:border-custom-gray-400/20 text-center">
-      <p className="text-text-on-light/60 dark:text-text-on-dark/50 text-sm">
-        {title}
-      </p>
-      <p className="text-xl font-bold mt-1">{value}</p>
+    <div className="p-6 space-y-8" dir="rtl">
+      <DashboardGreeting userName={userName} />
+      <DashboardStatsGrid loading={loading} stats= {stats} />
+      <UserInfoCard
+        user={userData}
+        onOpenEditModal={() => setIsModalOpen(true)}
+      />
+
+      <EditProfileModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        initialData={{
+          name: userName,
+          phone: userPhone,
+          email: userEmail,
+          address: userAddress,
+        }}
+        onSuccess={handleUpdateSuccess}
+      />
     </div>
   );
 }

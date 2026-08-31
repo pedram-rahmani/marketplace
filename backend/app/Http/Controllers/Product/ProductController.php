@@ -7,61 +7,94 @@ use App\Models\Product\Product;
 use App\Models\Product\Category;
 use App\Models\Product\ProductFeature;
 use App\Models\Product\ProductColor;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    use AuthorizesRequests;
 
     public function index(Request $request)
     {
         try {
-            $products = Product::with([
+            $query = Product::with([
                 'colors',
                 'introductions',
                 'category',
-                'specifications.feature'
-            ])->get();
+                'specifications.feature',
+                'warranties'
+            ]);
+
+            if ($request->has('category')) {
+                $slug = $request->query('category');
+
+                $query->whereHas('category', function ($q) use ($slug) {
+                    $q->where('slug', $slug)
+                        ->orWhere('name', $slug);
+                });
+            }
+
+            $products = $query->get();
 
             return response()->json(['products' => $products]);
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
+    public function show($slug)
+    {
+        $product = Product::where('slug', $slug)
+            ->with(['colors', 'introductions', 'category', 'specifications.feature', 'warranties'])
+            ->firstOrFail();
+
+        return response()->json(['product' => $product]);
+    }
+
     public function edit($id)
-{
-    $product = Product::findOrFail($id);
+    {
+        $product = Product::with('warranties')->findOrFail($id);
 
-    // بیا دستی کوئری بزنیم ببینیم چی برمی‌گرداند
-    $specs = \App\Models\Product\ProductSpecification::where('product_id', $id)->get();
+        $specs = \App\Models\Product\ProductSpecification::where('product_id', $id)->get();
 
-    // حالا تک‌تک بررسی کنیم آیا feature را دارند؟
-    $debug = $specs->map(function($s) {
-        return [
-            'id' => $s->id,
-            'feature_id' => $s->feature_id,
-            'feature_data' => $s->feature // اینجا باید آبجکتِ ویژگی را برگرداند
-        ];
-    });
+        $debug = $specs->map(function ($s) {
+            return [
+                'id' => $s->id,
+                'feature_id' => $s->feature_id,
+                'feature_data' => $s->feature
+            ];
+        });
 
-    return response()->json(['debug' => $debug]);
-}
+        return response()->json([
+            'product' => $product,
+            'debug' => $debug
+        ]);
+    }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Product::class);
         $request->validate([
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:products,slug',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         return DB::transaction(function () use ($request) {
-            $data = $request->only('name', 'price', 'discount', 'category_id');
+            $data = $request->only('name', 'slug', 'price', 'discount', 'category_id');
+            $data['slug'] = Str::slug($request->name, '-');
+
+            if ($request->has('options')) {
+                $data['options'] = is_string($request->options)
+                    ? json_decode($request->options, true)
+                    : $request->options;
+            }
+
             if ($request->hasFile('img')) {
                 $data['img'] = $request->file('img')->store('products', 'public');
             }
@@ -70,17 +103,41 @@ class ProductController extends Controller
 
             if ($request->has('introduction_blocks')) {
                 $blocks = json_decode($request->introduction_blocks, true);
-                if (is_array($blocks)) $product->introductions()->createMany($blocks);
+                if (is_array($blocks)) {
+                    $product->introductions()->createMany($blocks);
+                }
             }
 
             if ($request->has('colors')) {
                 $colors = json_decode($request->colors, true);
-                if (is_array($colors)) $product->colors()->createMany($colors);
+                if (is_array($colors)) {
+                    $uniqueColors = collect($colors)->unique('name')->toArray();
+                    $product->colors()->createMany($uniqueColors);
+                }
             }
 
             if ($request->has('specifications')) {
                 $specs = json_decode($request->specifications, true);
                 $this->saveSpecifications($product, $specs, $request->category_id);
+            }
+
+            if ($request->has('warranties')) {
+                $warranties = is_string($request->warranties) ? json_decode($request->warranties, true) : $request->warranties;
+                if (is_array($warranties)) {
+                    $formattedWarranties = [];
+                    foreach ($warranties as $w) {
+                        $warrantyId = $w['warranty_id'] ?? $w['id'] ?? null;
+                        if ($warrantyId) {
+                            $formattedWarranties[$warrantyId] = [
+                                'price' => $w['price'] ?? 0,
+                                'is_default' => filter_var($w['is_default'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
+                            ];
+                        }
+                    }
+                    if (!empty($formattedWarranties)) {
+                        $product->warranties()->attach($formattedWarranties);
+                    }
+                }
             }
 
             return response()->json(['message' => 'Product created!', 'product' => $product], 201);
@@ -91,11 +148,29 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:products,slug,' . $id,
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
         return DB::transaction(function () use ($request, $product) {
-            $product->update($request->only('name', 'price', 'discount', 'category_id'));
+            $updateData = $request->only('name', 'slug', 'price', 'discount', 'category_id');
+            $updateData['slug'] = Str::slug($request->name, '-');
+
+            if ($request->has('options')) {
+                $updateData['options'] = is_string($request->options)
+                    ? json_decode($request->options, true)
+                    : $request->options;
+            }
+
+            $product->update($updateData);
 
             if ($request->hasFile('img')) {
-                if ($product->img) Storage::disk('public')->delete($product->img);
+                if ($product->img) {
+                    Storage::disk('public')->delete($product->img);
+                }
                 $product->img = $request->file('img')->store('products', 'public');
                 $product->save();
             }
@@ -103,19 +178,52 @@ class ProductController extends Controller
             if ($request->has('introduction_blocks')) {
                 $product->introductions()->delete();
                 $blocks = json_decode($request->introduction_blocks, true);
-                if (is_array($blocks)) $product->introductions()->createMany($blocks);
+                if (is_array($blocks)) {
+                    $product->introductions()->createMany($blocks);
+                }
             }
 
             if ($request->has('colors')) {
                 $product->colors()->delete();
                 $colors = json_decode($request->colors, true);
-                if (is_array($colors)) $product->colors()->createMany($colors);
+
+                if (is_array($colors)) {
+                    $uniqueColors = collect($colors)->unique('name');
+
+                    foreach ($uniqueColors as $color) {
+                        $product->colors()->create([
+                            'name' => $color['name'],
+                            'hex' => $color['hex']
+                        ]);
+                    }
+                }
             }
 
             if ($request->has('specifications')) {
                 $product->specifications()->delete();
                 $specs = json_decode($request->specifications, true);
                 $this->saveSpecifications($product, $specs, $request->category_id);
+            }
+
+            if ($request->has('warranties')) {
+                $warranties = is_string($request->warranties) ? json_decode($request->warranties, true) : $request->warranties;
+                if (is_array($warranties)) {
+                    $formattedWarranties = [];
+                    foreach ($warranties as $w) {
+                        $warrantyId = $w['warranty_id'] ?? $w['id'] ?? null;
+                        if ($warrantyId) {
+                            $formattedWarranties[$warrantyId] = [
+                                'price' => $w['price'] ?? 0,
+                                'is_default' => filter_var($w['is_default'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
+                            ];
+                        }
+                    }
+                    $product->warranties()->sync($formattedWarranties);
+                } else {
+                    $product->warranties()->sync([]);
+                }
+            } else {
+                $product->warranties()->sync([]);
             }
 
             return response()->json(['message' => 'Product updated successfully']);
@@ -127,12 +235,18 @@ class ProductController extends Controller
         if (!is_array($specs)) return;
 
         foreach ($specs as $spec) {
-            $featureId = $spec['feature_id'];
+            $featureId = $spec['feature_id'] ?? null;
+            $value = $spec['value'] ?? null;
 
-            // حل اساسی مشکل: اگر ورودی متن باشد، ویژگی جدید ساخته می‌شود
+            if (empty($value)) continue;
+
             if (!is_numeric($featureId)) {
+                $featureTitle = trim($featureId);
+
+                if (empty($featureTitle)) continue;
+
                 $newFeature = ProductFeature::firstOrCreate(
-                    ['title' => $featureId],
+                    ['title' => $featureTitle, 'category_id' => $categoryId],
                     ['category_id' => $categoryId]
                 );
                 $featureId = $newFeature->id;
@@ -140,7 +254,7 @@ class ProductController extends Controller
 
             $product->specifications()->create([
                 'feature_id' => $featureId,
-                'value' => $spec['value']
+                'value' => $value
             ]);
         }
     }
@@ -152,6 +266,7 @@ class ProductController extends Controller
             $product->colors()->delete();
             $product->specifications()->delete();
             $product->introductions()->delete();
+            $product->warranties()->detach();
             $product->delete();
             return response()->json(['message' => 'Deleted!']);
         });
@@ -159,7 +274,8 @@ class ProductController extends Controller
 
     public function getCategories()
     {
-        return response()->json(['categories' => Category::all()]);
+        $categories = Category::whereNull('parent_id')->with('children')->get();
+        return response()->json(['categories' => $categories]);
     }
 
     public function getFilters(Request $request)

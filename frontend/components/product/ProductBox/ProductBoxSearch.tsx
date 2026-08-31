@@ -13,14 +13,15 @@ interface ProductBoxSearchProps {
 export default function ProductBoxSearch({
   productInfos,
 }: ProductBoxSearchProps) {
-  const { img, name, price, discount, slug } = productInfos;
+
+  const { img, name, price, discount, slug, description } = productInfos;
 
   const finalDiscount = discount ?? 0;
-  
+
   const { finalPrice, isFree } = useDiscount(price, finalDiscount);
 
   return (
-    <div className="group relative bg-white/30 dark:bg-white/5 backdrop-blur-md border border-white/10 p-4 rounded-b-4xl hover:border-teal-500/50 transition-all duration-300">
+    <div className="group relative bg-light dark:bg-dark-600 backdrop-blur-md border shadow border-white/10 p-4 rounded-b-4xl hover:border-teal-500/50 transition-all duration-300">
       {/* product image */}
       <Link
         href={`/products/${slug}`}
@@ -35,22 +36,31 @@ export default function ProductBoxSearch({
           sizes="(max-width: 768px) 100vw, 300px"
         />
 
-        {/* offer label */}
         {finalDiscount > 0 && (
-          <div className={`absolute top-4 left-4 text-white text-[10px] font-bold px-2 py-1 rounded-lg z-10 shadow-xl ${
-            isFree ? "bg-teal-500 animate-pulse text-xs" : "bg-teal-500"
-          }`}>
+          <div
+            className={`absolute top-4 left-4 text-white text-[10px] font-bold px-2 py-1 rounded-lg z-10 shadow-xl ${
+              isFree ? "bg-teal-500 animate-pulse text-xs" : "bg-teal-500"
+            }`}
+          >
             {isFree ? "رایگان!" : `${e2f(finalDiscount)}٪ تخفیف`}
           </div>
         )}
       </Link>
 
       <div className="mt-4 space-y-3">
-        <h3 className="text-white text-sm font-bold line-clamp-2 min-h-10">
+        {/* Title */}
+        <h3 className="text-text-on-light/90 dark:text-text-on-dark text-sm font-bold line-clamp-2 min-h-10">
           <Link href={`/products/${slug}`}>{name}</Link>
         </h3>
 
-        <div className="flex justify-between items-center">
+        {/* Description */}
+        {description && (
+          <p className="text-xs text-gray-400 line-clamp-2 h-10 leading-6">
+            {description}
+          </p>
+        )}
+
+        <div className="flex justify-between items-center pt-2">
           <div className="flex flex-col items-start">
             {finalDiscount > 0 && !isFree && (
               <span className="text-[10px] text-gray-500 line-through">
@@ -58,7 +68,9 @@ export default function ProductBoxSearch({
               </span>
             )}
 
-            <span className={`font-black text-lg ${isFree ? "text-red-400 animate-pulse" : "text-teal-400"}`}>
+            <span
+              className={`font-black text-lg ${isFree ? "text-red-400 animate-pulse" : "text-teal-400"}`}
+            >
               {finalPrice}
               {!isFree && (
                 <span className="text-[10px] font-normal mr-1 text-gray-400">

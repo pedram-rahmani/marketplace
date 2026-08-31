@@ -5,7 +5,10 @@ interface User {
   name: string;
   username: string;
   email: string;
+  phone?: string;
+  address?: string;
   role: string;
+  permissions: Record<string, boolean>;
 }
 
 interface AuthState {
@@ -14,7 +17,8 @@ interface AuthState {
   isLoggedIn: boolean;
 }
 
-const getToken = () => (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+const getToken = () =>
+  typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
 const initialState: AuthState = {
   user: null,

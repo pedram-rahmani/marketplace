@@ -58,7 +58,7 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "components/user/UserAccount/purchases/DeliveredTab.tsx"  ],
   "exclude": [
     "node_modules"
   ]

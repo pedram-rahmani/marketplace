@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Input from "@/components/ui/Form/Input";
+import ValidationInput from "@/components/ui/Form/ValidationInput"; 
 import { ValidationRule } from "@/Validator/Rules";
 
 interface SecureInputProps {
@@ -10,7 +10,7 @@ interface SecureInputProps {
   validations: ValidationRule[];
   onInputHandler: (id: string, value: any, isValid: boolean) => void;
   className?: string;
-  allInputs?: any; // to compare passwrord confirmation
+  allInputs?: any;
 }
 
 export default function SecureInput({
@@ -24,7 +24,7 @@ export default function SecureInput({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Input
+    <ValidationInput
       id={id}
       type={showPassword ? "text" : "password"}
       placeholder={placeholder}
@@ -33,7 +33,6 @@ export default function SecureInput({
       allInputs={allInputs}
       className={className}
     >
-        {/* eye icon */}
       <button
         type="button"
         onClick={() => setShowPassword(!showPassword)}
@@ -50,6 +49,6 @@ export default function SecureInput({
           </svg>
         )}
       </button>
-    </Input>
+    </ValidationInput>
   );
 }

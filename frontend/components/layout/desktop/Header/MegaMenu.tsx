@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-
-import { DBMenuItem } from "@/types/dbMenu";
+import { Category } from "@/types/category"; 
 import MenuItem from "./MenuItem";
 
-interface HeaderNavMenuProps {
+interface MegaMenuProps {
   showMenu: boolean;
-  menuItems: DBMenuItem[];
+  menuItems: Category[];
 }
 
 interface SelectedState {
@@ -19,7 +18,7 @@ interface SelectedState {
 export default function MegaMenu({
   showMenu,
   menuItems,
-}: HeaderNavMenuProps) {
+}: MegaMenuProps) {
   const [selected, setSelected] = useState<SelectedState>({
     parentId: null,
     parentId2: null,
@@ -31,19 +30,21 @@ export default function MegaMenu({
     return Math.max(...menuItems.map((item) => item.level));
   }, [menuItems]);
 
-  const catOne = useMemo(
-    () => menuItems.filter((item) => item.level === 1),
-    [menuItems],
+  const catOne = useMemo(() => 
+    menuItems.filter((i) => i.level === 1 || i.parent_id === null), 
+    [menuItems]
   );
   
   const catTwo = useMemo(
-  () => menuItems.filter((item) => item.level === 2 && parseInt(item.parent_id || "0") === selected.parentId),
-  [menuItems, selected.parentId]
+    () => menuItems.filter((item) => 
+      item.level === 2 && item.parent_id === selected.parentId
+    ),
+    [menuItems, selected.parentId]
   );
 
   const catThree = useMemo(
-  () => menuItems.filter((item) => item.level === 3 && parseInt(item.parent_id || "0") === selected.parentId2),
-  [menuItems, selected.parentId2]
+    () => menuItems.filter((item) => item.level === 3 && item.parent_id === selected.parentId2),
+    [menuItems, selected.parentId2]
   );
 
   const handleMouseEnterParent = useCallback((id: number) => {
@@ -59,31 +60,28 @@ export default function MegaMenu({
   }, []);
 
   const renderMenuItems = (
-    items: DBMenuItem[],
+    items: Category[],
     level: number,
     onHoverHandler?: (id: number) => void,
   ) =>
-    items.map((item) => (
-      <MenuItem
-        key={item.id}
-        item={item}
-        onHover={
-          onHoverHandler ? () => onHoverHandler(parseInt(item.id)) : undefined
-        }
-        isActive={
-          level === 1
-            ? parseInt(item.id) === selected.parentId
-            : level === 2
-              ? parseInt(item.id) === selected.parentId2 ||
-                parseInt(item.id) === selected.parentId
-              : parseInt(item.id) === selected.parentId3 ||
-                parseInt(item.id) === selected.parentId2
-        }
-        isLastLevel={level === maxLevel}
-        menuItems={menuItems}
-        maxLevel={maxLevel}
-      />
-    ));
+    items.map((item) => {
+      const isActive = 
+        level === 1 ? item.id === selected.parentId :
+        level === 2 ? item.id === selected.parentId2 :
+        item.id === selected.parentId3;
+
+      return (
+        <MenuItem
+          key={item.id}
+          item={item}
+          onHover={onHoverHandler ? () => onHoverHandler(item.id) : undefined}
+          isActive={isActive}
+          isLastLevel={level === maxLevel}
+          menuItems={menuItems}
+          maxLevel={maxLevel}
+        />
+      );
+    });
 
   if (menuItems.length === 0) return null;
 
@@ -91,7 +89,6 @@ export default function MegaMenu({
     <div
       className={`relative flex transition-[height] z-40 py-1 duration-300 ease-in-out rounded-br-sm bg-white dark:bg-dark-600 shadow
         ${!showMenu ? "h-0" : "h-96"}`}
-      style={{ height: `${(catOne.length / 5) * 100}px` }}
     >
       {/* Level 1 */}
       <ul className="flex flex-col h-full w-64 px-1 ml-0.5 overflow-y-auto scrollbar space-y-1 rounded-br-lg">

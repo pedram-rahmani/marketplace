@@ -2,24 +2,23 @@
 
 import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import MegaMenu from "./MegaMenu";
-import { DBMenuItem } from "@/types/dbMenu";
+import { Category } from "@/types/category";
 import { useAppDispatch } from "@/store/hooks/storeHooks";
 import { fetchSettings } from "@/store/slices/settingSlice";
 import useLockBodyScroll from "@/store/hooks/useLockBodyScroll";
-import Link from "next/link";
 import { useSettings } from "@/store/hooks/useSettings";
 import { BaseSkeleton } from "@/components/ui/Skeletons/Skeletons";
 
-interface HeaderNavProps {
-  menuItems: DBMenuItem[];
+interface NavbarProps {
+  menuItems: Category[];
 }
 
-export default function Navbar({ menuItems }: HeaderNavProps) {
+export default function Navbar({ menuItems }: NavbarProps) {
   const [showMenu, setShowMenu] = useState(false);
   const dispatch = useAppDispatch();
 
-  // گرفتن داده‌ها از استور
   const { logoUrl: cleanLogoUrl, siteName, loading, rawSettings } = useSettings();
 
   useLockBodyScroll(showMenu);

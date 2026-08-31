@@ -11,15 +11,15 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             ProductSeeder::class,
-            MenuSeeder::class,
             ColorSeeder::class,
-            //CommentSeeder::class,
-            //QuestionSeeder::class,
+            ReviewSeeder::class,
+            QuestionSeeder::class,
             ProductIntroductionSeeder::class,
             WalletSeeder::class,
-            OrderSeeder::class,
             TicketSeeder::class,
+            OrderSeeder::class,
             SettingSeeder::class,
+            WarrantySeeder::class,
         ]);
     }
 }

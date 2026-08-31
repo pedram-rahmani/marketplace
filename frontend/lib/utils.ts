@@ -3,11 +3,10 @@
  */
 export const getImagePath = (path: string | null) => {
   if (!path) return "/fallback.jpg";
-  
-  if (path.startsWith("http")) return path; 
+  if (path.startsWith("http")) return path;
 
-  const baseUrl = "http://127.0.0.1:8000"; 
-  
+  const baseUrl = "http://127.0.0.1:8000";
+
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   
   return `${baseUrl}/storage/${cleanPath}`;

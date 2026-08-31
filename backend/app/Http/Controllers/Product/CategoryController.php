@@ -5,27 +5,39 @@ namespace App\Http\Controllers\Product;
 use App\Http\Controllers\Controller;
 use App\Models\Product\Category;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
-    // Fetch all categories
+    use AuthorizesRequests;
+
     public function index()
     {
+        //$this->authorize('viewAny', Category::class);
         $categories = Category::all();
-
-        return response()->json($categories);
+        return response()->json(['data' => $categories]);
     }
 
-    // Store a new category
     public function store(Request $request)
     {
-        // Validate the input
+        $this->authorize('create', Category::class);
         $request->validate([
-            'name' => 'required|string|unique:categories,name',
+            'name' => 'required|string',
+            'slug' => 'required|string|unique:categories,slug',
+            'parent_id' => 'nullable|exists:categories,id',
         ]);
 
-        // Create a new category
-        $category = Category::create($request->only('name'));
+        $data = $request->only('name', 'slug', 'parent_id');
+
+        if ($request->filled('parent_id')) {
+            $parent = Category::find($request->parent_id);
+            $data['level'] = $parent->level + 1;
+        } else {
+            $data['level'] = 1;
+        }
+
+        $category = Category::create($data);
 
         return response()->json(['data' => $category], 201);
     }
@@ -41,23 +53,26 @@ class CategoryController extends Controller
     // Update an existing category
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|unique:categories,name,' . $id,
-        ]);
-
         $category = Category::findOrFail($id);
-        $category->update($request->only('name'));
+        $this->authorize('update', $category);
+        $data = $request->only('name', 'slug', 'parent_id');
 
+        if ($request->has('parent_id') && $request->parent_id) {
+            $parent = Category::find($request->parent_id);
+            $data['level'] = $parent->level + 1;
+        } else {
+            $data['level'] = 1;
+        }
+
+        $category->update($data);
         return response()->json(['data' => $category]);
     }
 
     // Delete a category
     public function destroy($id)
     {
-        // Find the category
         $category = Category::findOrFail($id);
-
-        // Delete the category
+        $this->authorize('delete', $category);
         $category->delete();
 
         return response()->json(['message' => 'Category deleted successfully']);

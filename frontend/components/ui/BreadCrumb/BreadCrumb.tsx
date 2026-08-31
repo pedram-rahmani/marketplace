@@ -12,7 +12,7 @@ interface BreadcrumbProps {
 
 export default function Breadcrumb({ links = [] }: BreadcrumbProps) {
   return (
-    <div className="bg-custom-gray-100 dark:bg-ui-blue-800 py-3 mb-4 rounded-lg shadow rtl">
+    <div className="bg-light dark:bg-ui-blue-800 py-3 mb-4 rounded-lg shadow rtl">
       <div className="container mx-auto px-4">
         <ol className="flex items-center space-x-2 text-sm text-text-on-light dark:text-text-on-dark gap-x-1">
           {/* home*/}

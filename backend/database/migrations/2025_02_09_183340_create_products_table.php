@@ -11,14 +11,19 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name')->comment('نام محصول');
+            $table->string('slug')->unique()->comment('اسلاگ (شناسه یکتای متنی)');
             $table->text('description')->nullable()->comment('توضیحات');
-            $table->string('price')->nullable()->comment('قیمت (تومان)');
-            $table->string('discount', 3)->nullable()->comment('تخفیف (درصد)');
-            $table->string('rate')->nullable()->comment('امتیاز');
-            $table->string('img')->nullable()->comment('تصویر');
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->unsignedInteger('price')->nullable()->comment('قیمت (تومان) - تغییر به unsignedInteger برای محاسبات');
+            $table->unsignedTinyInteger('discount')->nullable()->comment('تخفیف (درصد)');
+            $table->decimal('rate', 2, 1)->nullable()->comment('امتیاز (مثلا 4.5)');
+            $table->string('img')->nullable()->comment('مسیر تصویر');
+            $table->json('options')->nullable()->comment('ویژگی‌های انتخابی محصول (سایز، اندازه صفحه و...)');
+
+            $table->foreignId('category_id')
+                  ->constrained('categories')
+                  ->onDelete('cascade');
+
             $table->timestamps();
-            $table->engine = 'InnoDB';
         });
     }
 

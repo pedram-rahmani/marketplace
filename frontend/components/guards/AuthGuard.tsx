@@ -1,30 +1,65 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import axiosInstance from "@/lib/axiosInstance";
+import { useSelector } from "react-redux";
 import SpinnerLoader from "@/components/ui/SpinnerLoader/SpinnerLoader";
 
-export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const [isAuthorized, setIsAuthorized] = useState(false);
+interface AuthGuardProps {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+  requiredPermission?: string;
+}
+
+export default function AuthGuard({
+  children,
+  allowedRoles,
+  requiredPermission,
+}: AuthGuardProps) {
+  const [isChecking, setIsChecking] = useState(true);
   const router = useRouter();
+  const userData = useSelector((state: any) => state.auth.user);
+  const userObj = useMemo(() => userData?.user || userData, [userData]);
 
   useEffect(() => {
-    axiosInstance
-      .get("/me")
-      .then(() => setIsAuthorized(true))
-      .catch(() => router.push("/login"));
-  }, [router]);
+    if (!userData) {
+      return;
+    }
 
-  if (!isAuthorized) {
+    const role = userObj?.role;
+    const permissions = userObj?.permissions || [];
+
+    if (userObj?.status !== "active") {
+      router.push("/login");
+      return;
+    }
+
+    if (role === "admin") {
+      setIsChecking(false);
+      return;
+    }
+
+    // بررسی نقش‌های مجاز (اگر allowedRoles پاس داده شده باشد)
+    if (allowedRoles && allowedRoles.length > 0) {
+      if (!role || !allowedRoles.includes(role)) {
+        router.push("/my-account");
+        return;
+      }
+    }
+
+    if (requiredPermission) {
+      if (!permissions.includes(requiredPermission)) {
+        router.push("/my-account");
+        return;
+      }
+    }
+    setIsChecking(false);
+  }, [userData, router, requiredPermission, allowedRoles, userObj]);
+
+  if (isChecking) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-gray-50 dark:bg-[#0f0f12]">
-        <div className="flex flex-col items-center justify-center min-h-100 gap-4">
-          <SpinnerLoader variant="multi-color" className="w-12 h-12" />
-          <p className="text-sm text-gray-500 animate-pulse">
-            در حال بارگذاری...
-          </p>
-        </div>
+      <div className="flex h-screen items-center justify-center">
+        <SpinnerLoader variant="multi-color" className="w-12 h-12" />
       </div>
     );
   }

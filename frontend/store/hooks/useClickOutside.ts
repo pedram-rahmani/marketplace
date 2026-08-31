@@ -1,23 +1,18 @@
-"use client";
-
 import { useEffect, useCallback, RefObject } from "react";
 
-type OnClickOutside = () => void;
-
 const useClickOutside = (
-  onClickOutside: OnClickOutside,
-  refs?: RefObject<HTMLElement> | RefObject<HTMLElement>[]
+  onClickOutside: () => void,
+  refs: RefObject<HTMLElement | null> | RefObject<HTMLElement | null>[]
 ) => {
   const handleClickOutside = useCallback(
     (e: MouseEvent) => {
-      const refArray = Array.isArray(refs) ? refs : (refs ? [refs] : []);
+      const refArray = Array.isArray(refs) ? refs : [refs];
       
-      if (refArray.length === 0) return;
-
       const isInside = refArray.some(
         (ref) => ref.current && ref.current.contains(e.target as Node)
       );
 
+      // اگر کلیک داخل مودال نبود، تابع بسته شدن را صدا بزن
       if (!isInside) {
         onClickOutside();
       }
@@ -26,10 +21,12 @@ const useClickOutside = (
   );
 
   useEffect(() => {
+    // استفاده از mousedown یا click (فرقی نمی‌کند وقتی شرط بالا دقیق باشد)
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [handleClickOutside]);
-
 };
 
 export default useClickOutside;

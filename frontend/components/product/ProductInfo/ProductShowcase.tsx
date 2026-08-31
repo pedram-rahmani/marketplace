@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useProduct } from "@/store/hooks/useProduct";
-import ProductGallery from "../ProductGallery/ProductGallery";
+import ProductGallery from "../ProductDetails/ProductGallery/ProductGallery";
 
 export default function ProductShowcase() {
   const product = useProduct();

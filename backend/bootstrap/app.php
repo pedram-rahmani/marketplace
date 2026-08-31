@@ -12,18 +12,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // معاف کردن تمام مسیرهای API از چک کردن CSRF
         $middleware->validateCsrfTokens(except: [
             'api/*',
         ]);
 
-        $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-        ]);
-
         $middleware->alias([
+            'sanctum.stateful' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'can' => \App\Http\Middleware\CheckPermission::class,
+
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

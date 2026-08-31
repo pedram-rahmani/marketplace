@@ -7,6 +7,7 @@ use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -20,6 +21,9 @@ class AuthController extends Controller
 
         $user = $this->createUser($request);
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // بارگذاری ایمن آدرس‌ها حتی در لحظه ثبت‌نام (برای جلوگیری از خطای احتمالی فرانت‌اند)
+        $user->load('addresses');
 
         return response()->json(['user' => $user, 'token' => $token, 'message' => 'Success'], 201);
     }
@@ -39,8 +43,14 @@ class AuthController extends Controller
             return response()->json(['error_code' => 'WRONG_PASSWORD'], 401);
         }
 
+        // بروزرسانی زمان آخرین ورود
+        $user->update(['last_login_at' => Carbon::now('Asia/Tehran')]);
+
         $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // بارگذاری رابطه آدرس‌ها برای همگام‌سازی کامل با سمت فرانت‌اند
+        $user->load('addresses');
 
         return response()->json(['user' => $user, 'token' => $token, 'message' => 'Success'], 200);
     }
@@ -53,7 +63,14 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json(['user' => $request->user()]);
+        // دریافت کاربر جاری همراه با آدرس‌های ثبت‌شده به صورت استاندارد
+        $user = $request->user();
+
+        if ($user) {
+            $user->load('addresses');
+        }
+
+        return response()->json(['user' => $user]);
     }
 
     private function validateRegistration(Request $request)
@@ -69,12 +86,14 @@ class AuthController extends Controller
     private function createUser(Request $request)
     {
         $isFirstUser = User::count() === 0;
+
         return User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $isFirstUser ? 'admin' : 'user',
+            'last_login_at' => Carbon::now('Asia/Tehran'),
         ]);
     }
 }

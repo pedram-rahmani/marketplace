@@ -14,7 +14,7 @@ import MessageModal from "@/components/feedback/MessageModal/MessageModal";
 import {
   requiredValidator,
   minValidator,
-  maxValidator,
+  maxLengthValidator,
   emailValidator,
   passwordValidator,
   usernameValidator,
@@ -25,7 +25,6 @@ const Register: React.FC = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // تغییر: در اینجا اکنون پاسخ کامل (آبجکت) را نگه می‌داریم تا مودال پردازش کند
   const [result, setResult] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -92,9 +91,9 @@ const Register: React.FC = () => {
 
         <form className="mt-8 space-y-6" onSubmit={newUserRegister}>
           <div className="flex flex-col gap-y-4">
-            <ValidationInput id="name" type="text" placeholder="نام و نام خانوادگی" className="input-validation" validations={[requiredValidator(), minValidator(3), maxValidator(30)]} onInputHandler={onInputHandler} />
-            <ValidationInput id="username" type="text" placeholder="نام کاربری" className="input-validation" validations={[requiredValidator(), minValidator(3), maxValidator(30), usernameValidator()]} onInputHandler={onInputHandler} />
-            <ValidationInput id="email" type="email" placeholder="آدرس ایمیل" className="input-validation ltr" validations={[requiredValidator(), maxValidator(38), emailValidator()]} onInputHandler={onInputHandler} />
+            <ValidationInput id="name" type="text" placeholder="نام و نام خانوادگی" className="input-validation" validations={[requiredValidator(), minValidator(3), maxLengthValidator(30)]} onInputHandler={onInputHandler} />
+            <ValidationInput id="username" type="text" placeholder="نام کاربری" className="input-validation" validations={[requiredValidator(), minValidator(3), maxLengthValidator(30), usernameValidator()]} onInputHandler={onInputHandler} />
+            <ValidationInput id="email" type="email" placeholder="آدرس ایمیل" className="input-validation ltr" validations={[requiredValidator(), maxLengthValidator(38), emailValidator()]} onInputHandler={onInputHandler} />
             <ValidationInput id="password" type="password" placeholder="رمز عبور" className="input-validation" validations={[requiredValidator(), passwordValidator()]} onInputHandler={onInputHandler} />
             <ValidationInput id="passwordConfirmation" type="password" placeholder="تکرار رمز عبور" className="input-validation" validations={[requiredValidator(), passwordConfirmationValidator()]} allInputs={formState.inputs} onInputHandler={onInputHandler} />
           </div>

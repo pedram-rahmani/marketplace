@@ -1,5 +1,4 @@
 import ProductBox from "@/components/product/ProductBox/ProductBox";
-
 import { getProducts } from "@/server/product";
 import { ProductSummary } from "@/types/product";
 
@@ -13,7 +12,6 @@ interface ProductSectionProps {
 
 const ProductSection = ({ headerProps, products }: ProductSectionProps) => (
   <section>
-   
     <div className="grid grid-rows-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-7">
       {products.map((product) => (
         <ProductBox key={product.id} productInfos={product} />
@@ -23,7 +21,7 @@ const ProductSection = ({ headerProps, products }: ProductSectionProps) => (
 );
 
 export default async function Page() {
-  const products = (await getProducts()) as ProductSummary[];
+  const products: ProductSummary[] = await getProducts();
 
   return (
     <div className="space-y-5">

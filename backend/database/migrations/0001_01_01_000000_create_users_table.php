@@ -5,9 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -15,10 +13,16 @@ return new class extends Migration {
             $table->string('name')->comment('نام و نام خانوادگی');
             $table->string('username')->unique()->comment('نام کاربری');
             $table->string('email')->unique()->comment('آدرس ایمیل');
+            $table->string('phone', 20)->nullable()->comment('شماره تلفن');
             $table->timestamp('email_verified_at')->nullable()->comment('تاریخ تایید ایمیل');
             $table->string('password')->comment('رمز عبور');
-            $table->string('role')->comment('سمت')->default('user'); // admin, co-admin, user
+            $table->string('role')->comment('سمت')->default('user');
+            $table->string('status')->default('active')->comment('وضعیت کاربر');
+            $table->text('admin_notes')->nullable()->comment("یادداشت ادمین");
+            $table->timestamp('last_login_at')->nullable()->comment("آخرین بازدید");
             $table->json('permissions')->nullable()->comment('دسترسی ها');
+            $table->softDeletes();
+
             $table->timestamps();
         });
 
@@ -38,9 +42,6 @@ return new class extends Migration {
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');
