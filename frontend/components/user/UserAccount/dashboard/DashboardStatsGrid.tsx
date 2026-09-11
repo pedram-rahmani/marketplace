@@ -28,7 +28,7 @@ export default function DashboardStatsGrid({ loading, stats }: DashboardStatsGri
         value={`${stats.order_count} مورد`}
         link="/my-account/purchases"
         icon={
-          <svg viewBox="0 0 24 24" className="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" className="size-5! text-violet-500">
             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
           </svg>
         }
@@ -38,7 +38,7 @@ export default function DashboardStatsGrid({ loading, stats }: DashboardStatsGri
         value={`${stats.ticket_count} مورد`}
         link="/my-account/support"
         icon={
-          <svg viewBox="0 0 24 24" className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" className="size-5! text-blue-500">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
         }
@@ -48,7 +48,7 @@ export default function DashboardStatsGrid({ loading, stats }: DashboardStatsGri
         value={`${(stats.wallet_balance || 0).toLocaleString()} تومان`}
         link="/my-account/transactions"
         icon={
-          <svg viewBox="0 0 24 24" className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" className="size-5! text-emerald-500">
             <path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4M4 6v12a2 2 0 002 2h14v-4M18 12a2 2 0 100 4 2 2 0 000-4z" />
           </svg>
         }

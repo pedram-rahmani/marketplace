@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             OrderSeeder::class,
             SettingSeeder::class,
             WarrantySeeder::class,
+            CouponSeeder::class,
         ]);
     }
 }

@@ -132,7 +132,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-5 bg-white/80 dark:bg-dark-700/70 p-6 rounded-3xl border border-white/10 shadow-xl backdrop-blur-md mb-10"
+        className="space-y-5 bg-white/80 dark:bg-dark-700/70 p-4 sm:p-6 rounded-3xl border border-white/10 shadow-xl backdrop-blur-md mb-10"
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
           <span className="text-sm text-text-on-light/70 dark:text-text-on-dark/60 font-medium">
@@ -142,7 +142,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
             name="rating"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <RatingStars rating={value} onChange={onChange} size={6} />
+              <RatingStars rating={value} onChange={onChange} size={5} />
             )}
           />
         </div>
@@ -154,23 +154,6 @@ export default function ReviewSection({ productId }: { productId: number }) {
         />
 
         <div className="space-y-3">
-          <label className="inline-flex items-center gap-2 text-xs text-text-on-light/70 dark:text-text-on-dark/60 hover:text-cyan-400 cursor-pointer transition-colors bg-dark-900/5 hover:bg-dark-900/10 px-4 py-2 rounded-xl border border-custom-gray-300/60 dark:border-custom-gray-300/10">
-            <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-              <circle cx="12" cy="13" r="3" />
-            </svg>
-            <span>افزودن عکس یا ویدیو (اختیاری)</span>
-            <input
-              type="file"
-              multiple
-              accept="image/*,video/*"
-              className="hidden"
-              {...register("files", {
-                onChange: handleFileChange,
-              })}
-            />
-          </label>
-
           {previewFiles.length > 0 && (
             <div className="flex gap-3 overflow-x-auto p-2 bg-black/20 rounded-xl">
               {previewFiles.map((file, idx) => (
@@ -196,13 +179,32 @@ export default function ReviewSection({ productId }: { productId: number }) {
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold w-full py-3 rounded-2xl transition-all disabled:opacity-50 shadow-lg shadow-cyan-500/10 cursor-pointer"
-        >
-          {isSubmitting ? "در حال ثبت نظر..." : "ثبت دیدگاه"}
-        </button>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <label className="inline-flex items-center justify-center gap-2 text-xs text-text-on-light/70 dark:text-text-on-dark/60 hover:text-cyan-400 cursor-pointer transition-colors bg-dark-900/5 hover:bg-dark-900/10 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-custom-gray-300/60 dark:border-custom-gray-300/10 w-full sm:w-auto">
+            <svg className="size-4!" viewBox="0 0 24 24">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+              <circle cx="12" cy="13" r="3" />
+            </svg>
+            <span>افزودن عکس یا ویدیو (اختیاری)</span>
+            <input
+              type="file"
+              multiple
+              accept="image/*,video/*"
+              className="hidden"
+              {...register("files", {
+                onChange: handleFileChange,
+              })}
+            />
+          </label>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold w-full sm:w-auto px-6 py-2.5 sm:px-8 sm:py-3 rounded-xl sm:rounded-2xl text-sm sm:text-base transition-all disabled:opacity-50 shadow-lg shadow-cyan-500/10 cursor-pointer"
+          >
+            {isSubmitting ? "در حال ثبت نظر..." : "ثبت دیدگاه"}
+          </button>
+        </div>
       </form>
 
       {loading ? (

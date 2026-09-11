@@ -7,4 +7,5 @@ export interface Category {
   path?: string;
   created_at?: string;
   updated_at?: string;
+  children?: Category[];
 }

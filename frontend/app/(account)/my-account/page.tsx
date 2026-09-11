@@ -7,6 +7,7 @@ import DashboardGreeting from "@/components/user/UserAccount/dashboard/Dashboard
 import DashboardStatsGrid from "@/components/user/UserAccount/dashboard/DashboardStatsGrid";
 import UserInfoCard from "@/components/user/UserAccount/dashboard/UserInfoCard";
 import EditProfileModal from "@/components/user/UserAccount/dashboard/EditProfileModal";
+import UserCoupons from "@/components/user/UserAccount/dashboard/UserCoupons"; // ۱. ایمپورت کامپوننت کدهای تخفیف
 
 interface DashboardStats {
   order_count: number;
@@ -54,7 +55,6 @@ export default function Page() {
     
   const userEmail = (userData as any)?.user?.email || userData?.email || "";
   
-  // استخراج هوشمند آدرس پیش‌فرض از جدول addresses یا سایر فیلدهای احتمالی
   const rawAddresses = (userData as any)?.addresses || (userData as any)?.user?.addresses;
   const defaultAddressObj = 
     Array.isArray(rawAddresses) 
@@ -68,13 +68,11 @@ export default function Page() {
     "";
     
 
-  // بروزرسانی آنی استیت بعد از ویرایش موفق
   const handleUpdateSuccess = (updatedFields: any) => {
     setUserData((prev: any) => {
       const targetUser = prev?.user || prev;
       const updatedUser = { ...targetUser, ...updatedFields };
       
-      // آپدیت کردن آدرس درون آرایه addresses در صورت وجود
       let updatedAddresses = targetUser.addresses ? [...targetUser.addresses] : [];
       if (updatedFields.postal_address || updatedFields.phone) {
         if (updatedAddresses.length > 0) {
@@ -104,11 +102,14 @@ export default function Page() {
   return (
     <div className="p-6 space-y-8" dir="rtl">
       <DashboardGreeting userName={userName} />
-      <DashboardStatsGrid loading={loading} stats= {stats} />
+      <DashboardStatsGrid loading={loading} stats={stats} />
       <UserInfoCard
         user={userData}
         onOpenEditModal={() => setIsModalOpen(true)}
       />
+
+      {/* ۲. اضافه کردن بخش کدهای تخفیف به داشبورد */}
+      <UserCoupons />
 
       <EditProfileModal
         isOpen={isModalOpen}

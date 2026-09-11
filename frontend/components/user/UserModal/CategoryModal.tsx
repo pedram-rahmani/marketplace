@@ -10,6 +10,8 @@ interface CategoryModalProps {
   title: string;
   children: React.ReactNode;
   formId?: string;
+  submitButtonText?: string; // متن دکمه پایین مودال
+  showFooterButton?: boolean; // آیا دکمه پایین نمایش داده شود یا خیر
 }
 
 export default function CategoryModal({
@@ -18,6 +20,8 @@ export default function CategoryModal({
   title,
   children,
   formId = "category-form",
+  submitButtonText = "ذخیره دسته‌بندی",
+  showFooterButton = true, // به صورت پیش‌فرض روشن است تا جاهای دیگر خراب نشوند
 }: CategoryModalProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -38,11 +42,14 @@ export default function CategoryModal({
           <button onClick={onClose} className="text-gray-400 hover:text-red-500 cursor-pointer">✕</button>
         </div>
         <div className="overflow-y-auto scrollbar p-6 pt-2">{children}</div>
-        <div className="p-6 pt-2 border-t border-gray-100 dark:border-dark-800 bg-light dark:bg-dark-900">
-          <button type="submit" form={formId} className="w-full py-3 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition cursor-pointer">
-            ذخیره دسته‌بندی
-          </button>
-        </div>
+        
+        {showFooterButton && (
+          <div className="p-6 pt-2 border-t border-gray-100 dark:border-dark-800 bg-light dark:bg-dark-900">
+            <button type="submit" form={formId} className="w-full py-3 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition cursor-pointer">
+              {submitButtonText}
+            </button>
+          </div>
+        )}
       </div>
     </div>,
     document.body

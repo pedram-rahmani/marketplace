@@ -24,7 +24,6 @@ async function getProductQuestions(productId: number | string) {
   }
 }
 
-// get product reviews and media
 async function getProductReviews(productId: number | string) {
   try {
     const res = await axiosInstance.get(`/products/${productId}/reviews`);
@@ -34,7 +33,7 @@ async function getProductReviews(productId: number | string) {
   }
 }
 
-export default async function page({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
   const product = await getProduct(slug);
@@ -45,14 +44,14 @@ export default async function page({ params }: PageProps) {
     );
   }
 
+  const productIdNum = Number(product.id);
+
   const productQuestions =
     product.questions || (await getProductQuestions(product.id));
 
-  // get product reviews and media
   const productReviews =
     product.reviews || (await getProductReviews(product.id));
 
-  // 1. Build official product images list
   const officialImages: GalleryMedia[] = [
     ...(product?.img
       ? [
@@ -74,20 +73,18 @@ export default async function page({ params }: PageProps) {
       : []),
   ];
 
-  // Build user-submitted media list (only approved ones)
   const userMediaItems: GalleryMedia[] = [];
   if (Array.isArray(productReviews)) {
     productReviews.forEach((review: any) => {
       if (Array.isArray(review.media)) {
         review.media.forEach((m: any) => {
-          // check if the media is approved
           const isApproved = m.is_approved === 1 || m.is_approved === true;
           if (isApproved) {
             userMediaItems.push({
               id: `user-media-${m.id}`,
               type: m.file_type === "video" ? "video" : "image",
               url: m.file_path,
-              thumbnail: m.file_type === "video" ? product?.img : undefined,
+              thumbnail: m.file_type === "video" ? (product?.img || undefined) : undefined,
               source: "user",
               userName: review.user?.name || "کاربر مهمان",
               comment: review.comment,
@@ -101,65 +98,70 @@ export default async function page({ params }: PageProps) {
     });
   }
 
-  // Combine official and user media items for the gallery
   const allMediaItems: GalleryMedia[] = [...officialImages, ...userMediaItems];
 
   return (
-    <main className="max-w-7xl p-4 md:p-8 relative text-white">
+    <main className="max-w-7xl p-4 md:p-8 relative text-white mx-auto overflow-x-hidden w-full box-border">
       <Breadcrumb
         links={[
-          { id: "search", title: "Search", to: "/search" },
+          { id: "search", title: "جستجو", to: "/search" },
           { id: "product-title", title: product?.name || "Product Name" },
         ]}
       />
 
-      <div className="absolute top-0 right-0 size-125 bg-cyan-500/10 rounded-full blur-[120px] -z-10" />
+      {/* اصلاح اندازه دکوریشن پس‌زمینه برای جلوگیری از بیرون‌زدگی */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mt-6 items-start">
-        <div className="lg:col-span-6 space-y-4 lg:sticky lg:top-6">
-          <ProductGallery mediaItems={allMediaItems} />
+      {/* تنظیم گرید به 12 ستون استاندارد و هماهنگ کردن spanها */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 mt-6 items-start w-full min-w-0">
+        {/* ستون اول: گالری (6 ستون) */}
+        <div className="lg:col-span-6 space-y-4 w-full min-w-0 overflow-hidden">
+          <div className="w-full overflow-hidden">
+            <ProductGallery mediaItems={allMediaItems} />
+          </div>
 
-          <div className="grid grid-cols-3 gap-3 bg-white/80 dark:bg-dark-700/70 border border-white/5 rounded-2xl p-4 text-center text-xs text-text-on-light/80 dark:text-text-on-dark/90">
-            <div className="flex flex-col items-center gap-1.5">
-              <span className="w-8 h-8 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center">
-                <svg className="size-5!" viewBox="0 0 24 24">
+          <div className="grid grid-cols-3 gap-2 md:gap-3 bg-white/80 dark:bg-dark-700/70 border border-white/5 rounded-2xl p-3 md:p-4 text-center text-[11px] md:text-xs text-text-on-light/80 dark:text-text-on-dark/90">
+            <div className="flex flex-col items-center gap-1.5 min-w-0">
+              <span className="w-8 h-8 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center shrink-0">
+                <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
                   <path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 100 2 1 1 0 000-2zm6 0a1 1 0 100 2 1 1 0 000-2z" />
                 </svg>
               </span>
-              <span className="font-medium">ارسال سریع</span>
+              <span className="font-medium truncate w-full">ارسال سریع</span>
             </div>
 
-            <div className="flex flex-col items-center gap-1.5">
-              <span className="w-8 h-8 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center">
-                <svg className="size-5!" viewBox="0 0 24 24">
+            <div className="flex flex-col items-center gap-1.5 min-w-0">
+              <span className="w-8 h-8 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center shrink-0">
+                <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </span>
-              <span className="font-medium">ضمانت اصالت کالا</span>
+              <span className="font-medium truncate w-full">ضمانت اصالت کالا</span>
             </div>
 
-            <div className="flex flex-col items-center gap-1.5">
-              <span className="w-8 h-8 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center">
-                <svg className="size-5!" viewBox="0 0 24 24">
+            <div className="flex flex-col items-center gap-1.5 min-w-0">
+              <span className="w-8 h-8 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center shrink-0">
+                <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </span>
-              <span className="font-medium">۷ روز ضمانت بازگشت</span>
+              <span className="font-medium truncate w-full">۷ روز ضمانت بازگشت</span>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-6 space-y-8">
+        {/* ستون دوم: اطلاعات (6 ستون برای تکمیل 12 ستون گرید) */}
+        <div className="lg:col-span-6 space-y-6 w-full min-w-0 overflow-hidden">
           <ProductInfo product={product} />
           <ProductSpecs product={product} />
         </div>
       </div>
 
-      <div className="mt-16 pt-10 border-t border-white/10 space-y-12">
+      <div className="mt-16 pt-10 border-t border-white/10 space-y-12 w-full overflow-hidden">
         <ProductContent product={product} />
-        <QuestionSection questions={productQuestions} productId={product.id} />
-        <ReviewSection productId={product.id} />
+        <QuestionSection questions={productQuestions} productId={productIdNum} />
+        <ReviewSection productId={productIdNum} />
       </div>
     </main>
   );

@@ -5,7 +5,7 @@ namespace App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Content\Comment;
+use App\Models\Content\Review;
 use App\Models\Content\Question;
 use App\Models\Product\Category;
 use App\Models\Product\ProductColor;
@@ -22,6 +22,8 @@ class Product extends Model
         'description',
         'price',
         'discount',
+        'discount_starts_at',
+        'discount_expires_at',
         'category_id',
         'img',
         'options'
@@ -29,12 +31,14 @@ class Product extends Model
 
     protected $casts = [
         'options' => 'array',
+        'discount_starts_at' => 'datetime',
+        'discount_expires_at' => 'datetime',
     ];
 
     public function colors() {return $this->hasMany(ProductColor::class);}
     public function introductions() {return $this->hasMany(ProductIntroduction::class)->orderBy('sort_order', 'asc');}
     public function specifications() {return $this->hasMany(ProductSpecification::class, 'product_id');}
-    public function comments() {return $this->hasMany(Comment::class);}
+    public function reviews() {return $this->hasMany(Review::class);}
     public function questions() {return $this->hasMany(Question::class);}
     public function category() {return $this->belongsTo(Category::class); }
     public function warranties(){return $this->belongsToMany(\App\Models\Product\Warranty::class, 'product_warranty')->withPivot('price', 'is_default')->withTimestamps();}

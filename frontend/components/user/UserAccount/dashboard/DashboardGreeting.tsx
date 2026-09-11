@@ -1,36 +1,56 @@
 interface DashboardGreetingProps {
   userName: string;
+  userAvatar?: string; // آدرس عکس کاربر (اختیاری)
 }
 
 export default function DashboardGreeting({
   userName,
+  userAvatar,
 }: DashboardGreetingProps) {
   return (
-    <div className="relative overflow-hidden bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800/80 p-6 md:p-8 rounded-3xl shadow-sm transition-all">
-      <div className="absolute -left-20 -top-20 w-48 h-48 bg-violet-500/10 dark:bg-violet-600/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-fuchsia-500/10 dark:bg-fuchsia-600/15 rounded-full blur-3xl pointer-events-none" />
+    <div className="relative overflow-hidden bg-white dark:bg-dark-900 border border-custom-gray-100 dark:border-dark-800 px-4 py-3.5 sm:p-6 rounded-2xl shadow-sm">
+      <div className="absolute -left-20 -top-20 w-48 h-48 bg-ui-purple/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-linier-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-xl font-bold shadow-sm shadow-violet-600/25 shrink-0">
-            {userName ? userName.charAt(0).toUpperCase() : "کاربر"}
+      <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-ui-pink/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="flex items-center justify-between relative z-10 gap-4">
+        {/* سمت راست: آواتار و متن سلام */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-linear-to-tr from-primary to-info flex items-center justify-center text-sm sm:text-base font-bold text-white shadow-sm shrink-0">
+            {userAvatar ? (
+              <img
+                src={userAvatar}
+                alt={userName || "کاربر"}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              userName ? userName.charAt(0).toUpperCase() : "کاربر"
+            )}
           </div>
 
           <div>
-            <h1 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-              سلام، {userName} عزیز! 👋
+            <span className="text-xs text-text-on-light dark:text-text-on-dark/60 block">
+              پنل مدیریت حساب
+            </span>
+
+            <h1 className="text-sm sm:text-lg font-bold text-dark-600 dark:text-text-on-dark tracking-tight">
+              سلام، {userName} عزیز
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1 text-xs md:text-sm leading-relaxed">
-              به پنل کاربری خود خوش آمدید. از اینجا می‌توانید وضعیت سفارش‌ها و
-              حساب خود را مدیریت کنید.
-            </p>
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-xs font-medium text-gray-600 dark:text-gray-400">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          حساب کاربری فعال
-        </div>
+        {/* notification btn */}
+        <button
+          type="button"
+          aria-label="اعلان‌ها"
+          className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-light dark:bg-dark-800 border border-custom-gray-100 dark:border-dark-700 text-text-on-light dark:text-text-on-dark hover:text-primary dark:hover:text-primary transition-colors cursor-pointer shrink-0"
+        >
+          <svg viewBox="0 0 24 24" fill="none" className="size-5!">
+            <path d="M12.02 2.91c-3.5 0-6.17 2.67-6.17 6.17v2.33c0 .5-.25 1.17-.5 1.67l-1 1.67c-.67 1.17.17 2.67 1.5 2.67h14.34c1.33 0 2.17-1.5 1.5-2.67l-1-1.67c-.25-.5-.5-1.17-.5-1.67V9.08c0-3.5-2.67-6.17-6.17-6.17zM10.02 21.08c.5.67 1.33 1.08 2 1.08s1.5-.42 2-1.08" />
+          </svg>
+
+          <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-danger" />
+        </button>
       </div>
     </div>
   );

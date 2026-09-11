@@ -6,6 +6,7 @@ use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\WalletController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\General\SettingController;
+use App\Http\Controllers\General\CouponController;
 use App\Http\Controllers\Product\CategoryController;
 use App\Http\Controllers\Product\ProductFeatureController;
 use App\Http\Controllers\Product\WarrantyController;
@@ -59,6 +60,13 @@ Route::middleware(['auth:sanctum', 'sanctum.stateful'])->group(function () {
     // --- Orders (History & Management) ---
     Route::get('/user/orders', [OrderController::class, 'index']);
     Route::get('/user/orders/{id}', [OrderController::class, 'show']);
+
+    // --- Coupons ---
+    Route::post('/coupons/apply', [CouponController::class, 'apply']);
+    Route::get('/user/coupons', [CouponController::class, 'userCoupons']);
+
+    // Admin CRUD for Coupons
+    Route::apiResource('admin/coupons', CouponController::class);
 
     // --- Support Tickets ---
     Route::get('/tickets', [TicketController::class, 'index']);

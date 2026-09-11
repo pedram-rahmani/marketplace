@@ -2,37 +2,42 @@ import Header from "@/components/layout/desktop/Header/Header";
 import Footer from "@/components/layout/desktop/Footer/Footer";
 import MobileHeader from "@/components/layout/mobile/Header/Header";
 import MobileMenu from "@/components/layout/mobile/Footer/Footer";
-import { getCategories } from "@/server/category";
+import { getCategories, getNestedCategories } from "@/services/category";
 
 export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Fetch Categories from the server
-  const menuItems = await getCategories();
+  const desktopCategories = await getCategories();
+  const mobileCategories = await getNestedCategories();
 
   return (
     <>
-      <div className="hidden lg:block sticky top-0 z-30">
-        <Header menuItems={menuItems} />
+      {/* هدر دسکتاپ و تبلت */}
+      <div className="hidden md:block sticky top-0 z-30">
+        <Header menuItems={desktopCategories} />
       </div>
 
-      <div className="lg:hidden">
+      {/* هدر موبایل */}
+      <div className="md:hidden">
         <MobileHeader />
       </div>
 
-      <main className="main pt-14 lg:pt-0">
-        <div className="flex flex-col px-4 mr-auto ml-auto xs:max-w-118.75 sm:max-w-160 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl">
+      {/* اصلاح شده برای جلوگیری از اسکرول افقی در موبایل */}
+      <main className="main pt-5 md:pt-0 w-full overflow-x-hidden">
+        <div className="flex flex-col px-4 mx-auto w-full max-w-7xl box-border">
           {children}
         </div>
       </main>
 
-      <div className="lg:hidden">
-        <MobileMenu />
+      {/* منوی پایین موبایل */}
+      <div className="md:hidden">
+        <MobileMenu categories={mobileCategories} />
       </div>
 
-      <div className="hidden lg:block">
+      {/* فوتر دسکتاپ و تبلت */}
+      <div className="hidden md:block">
         <Footer />
       </div>
     </>

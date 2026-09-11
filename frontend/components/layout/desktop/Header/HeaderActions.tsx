@@ -25,12 +25,12 @@ export default function HeaderActions() {
   useClickOutside(() => setShowProfile(false), [profileRef]);
 
   return (
-    <div className="flex items-center gap-x-5">
+    <div className="flex items-center gap-x-3 md:gap-x-4 shrink-0">
       {/* Search Box */}
-      <div className="relative group hidden lg:block dark:border-dark-800 rounded-3xl border border-custom-gray-300 bg-custom-gray-100/60 dark:bg-dark-600/50">
-        <form className="hidden xl:block" action="" method="get">
+      <div className="relative group hidden xl:block dark:border-dark-800 rounded-3xl border border-custom-gray-300 bg-custom-gray-100/60 dark:bg-dark-600/50">
+        <form className="block" action="" method="get">
           <input
-            className="text-text-on-light dark:text-text-on-dark text-sm rounded-full pr-4! pl-12! 3xl:w-80 h-full py-2! tracking-tight"
+            className="text-text-on-light dark:text-text-on-dark text-sm rounded-full pr-4! pl-12! w-64 3xl:w-80 h-full py-2! tracking-tight"
             type="text"
             placeholder="به دنبال چه میگردی؟"
           />
@@ -39,7 +39,7 @@ export default function HeaderActions() {
             type="submit"
             role="button"
           >
-            <svg viewBox="0 0 24 24">
+            <svg viewBox="0 0 24 24" className="size-5!">
               <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
           </button>
@@ -48,7 +48,7 @@ export default function HeaderActions() {
       
       {/* Toggle Theme Button */}
       <div
-        className="hidden lg:flex button-xl h-btn"
+        className="hidden md:flex button-xl h-btn cursor-pointer"
         onClick={() => toggleTheme()}
       >
         <svg className={`${theme === "dark" ? "hidden" : "inline"}`}>
@@ -79,6 +79,7 @@ export default function HeaderActions() {
         />
       </div>
 
+      {/* Profile / Login */}
       {isLoggedIn ? (
         <div className="relative rounded-full group z-50" ref={profileRef}>
           <button
@@ -99,7 +100,7 @@ export default function HeaderActions() {
           />
         </div>
       ) : (
-        <Link className="btn btn--link text-white!" href="/login">
+        <Link className="btn btn--link text-white! text-xs md:text-sm whitespace-nowrap" href="/login">
           <svg viewBox="0 0 24 24" className="size-5!">
             <path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
           </svg>

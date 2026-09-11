@@ -27,7 +27,7 @@ export default function Header({ menuItems }: HeaderProps) {
       ref={headerRef}
       className={`header ${isScrolled ? "sticky-header" : ""}`}
     >
-      <div className="hidden lg:flex items-center justify-between mx-auto w-full h-24 px-4 lg:px-12 transition-all">
+      <div className="hidden md:flex items-center justify-between mx-auto w-full h-24 px-3 md:px-4 lg:px-12 transition-all">
         <Navbar menuItems={menuItems} />
         <HeaderActions />
       </div>

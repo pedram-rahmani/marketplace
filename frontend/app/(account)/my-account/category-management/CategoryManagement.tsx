@@ -150,6 +150,7 @@ export default function CategoryManagement() {
               onAddSub={() => handleOpenAddSubModal(c.id)}
               onEdit={() => {
                 setEditingCategory(c);
+                setDefaultParentId(c.parent_id ?? null);
                 setIsModalOpen(true);
               }}
               onDelete={() => {

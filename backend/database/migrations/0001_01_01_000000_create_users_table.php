@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->string('username')->unique()->comment('نام کاربری');
             $table->string('email')->unique()->comment('آدرس ایمیل');
             $table->string('phone', 20)->nullable()->comment('شماره تلفن');
+            $table->string('avatar')->nullable()->comment('تصویر پروفایل');
             $table->timestamp('email_verified_at')->nullable()->comment('تاریخ تایید ایمیل');
             $table->string('password')->comment('رمز عبور');
             $table->string('role')->comment('سمت')->default('user');

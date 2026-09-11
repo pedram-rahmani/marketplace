@@ -10,33 +10,37 @@ const jalaaliDays = [
   'شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'
 ];
 
-/**
- * @param {string | Date} date - The input date (Gregorian).
- * @param {'long' | 'short'} format - The desired format ('long' => "پنجشنبه 27 دی 1403", 'short' => "1403/11/25").
- * @returns {string} - The formatted Jalaali date.
- */
-const useDate = (date, format = "long") => {
-  const jalaaliDate = useMemo(() => toJalaali(date), [date]);
+const useDate = (date: string | Date | null | undefined, format: "long" | "short" = "long") => {
+  return useMemo(() => {
+    if (!date) return "";
+    
+    const gregorianDate = new Date(date);
+    if (isNaN(gregorianDate.getTime())) return "";
 
-  // Get the day of the week
-  const gregorianDate = new Date(date);
-  const dayOfWeek = gregorianDate.getDay();
-  const dayOfWeekInJalaali = jalaaliDays[dayOfWeek];
+    const gy = gregorianDate.getFullYear();
+    const gm = gregorianDate.getMonth() + 1;
+    const gd = gregorianDate.getDate();
 
-  if (format === "long") {
-    return `${dayOfWeekInJalaali} ${jalaaliDate.jd} ${
-      jalaaliMonths[jalaaliDate.jm - 1]
-    } ${jalaaliDate.jy}`;
-  }
+    const jalaaliDate = toJalaali(gy, gm, gd);
+    const dayOfWeek = gregorianDate.getDay();
+  
+    const dayOfWeekInJalaali = jalaaliDays[(dayOfWeek + 1) % 7];
 
-  if (format === "short") {
-    return `${jalaaliDate.jy}-${String(jalaaliDate.jm).padStart(
-      2,
-      "0"
-    )}-${String(jalaaliDate.jd).padStart(2, "0")}`;
-  }
+    if (format === "long") {
+      return `${dayOfWeekInJalaali} ${jalaaliDate.jd} ${
+        jalaaliMonths[jalaaliDate.jm - 1]
+      } ${jalaaliDate.jy}`;
+    }
 
-  return "";
+    if (format === "short") {
+      return `${jalaaliDate.jy}/${String(jalaaliDate.jm).padStart(
+        2,
+        "0"
+      )}/${String(jalaaliDate.jd).padStart(2, "0")}`;
+    }
+
+    return "";
+  }, [date, format]);
 };
 
 export default useDate;

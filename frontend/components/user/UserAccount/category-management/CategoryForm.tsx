@@ -22,16 +22,21 @@ export default function CategoryForm({
   });
 
   useEffect(() => {
-    if (defaultParentId) {
-      setFormData(prev => ({ ...prev, parent_id: String(defaultParentId) }));
-    }
-  }, [defaultParentId]);
+    setFormData({
+      name: category?.name || "",
+      slug: category?.slug || "",
+      parent_id: category?.parent_id
+        ? String(category.parent_id)
+        : (defaultParentId ? String(defaultParentId) : ""),
+    });
+  }, [category, defaultParentId]);
 
   const handleNameChange = (val: string) => {
     const newSlug = val
+      .trim()
       .toLowerCase()
-      .replace(/[^a-zA-Z0-9\u0600-\u06FF\s]/g, "")
-      .replace(/\s+/g, "-");
+      .replace(/[\s]+/g, "-")
+      .replace(/[^a-z0-9\u0600-\u06FF\-]/g, "");
 
     setFormData((prev) => ({
       ...prev,
@@ -74,29 +79,40 @@ export default function CategoryForm({
   return (
     <form id="category-form" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4">
-        <Select
-          className="max-w-[384px]"
-          placeholder="انتخاب دسته‌ی والد"
-          options={categoryOptions}
-          value={formData.parent_id}
-          onChange={(val) => setFormData({ ...formData, parent_id: val })}
-          variant="advanced"
-        />
+        {/* فیلد والد همراه با لیبل */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">دسته‌ی والد</span>
+          <Select
+            className="max-w-[384px]"
+            placeholder="انتخاب دسته‌ی والد"
+            options={categoryOptions}
+            value={formData.parent_id}
+            onChange={(val) => setFormData({ ...formData, parent_id: val })}
+            variant="advanced"
+          />
+        </div>
 
-        <input
-          className="input-info"
-          placeholder="نام دسته‌بندی"
-          value={formData.name}
-          onChange={(e) => handleNameChange(e.target.value)}
-        />
-        <input
-          className="input-info"
-          placeholder="اسلاگ"
-          value={formData.slug}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, slug: e.target.value }))
-          }
-        />
+        {/* فیلد نام دسته‌بندی همراه با لیبل */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">نام دسته‌بندی</span>
+          <input
+            className="input-info"
+            placeholder="مثال: کالای دیجیتال"
+            value={formData.name}
+            onChange={(e) => handleNameChange(e.target.value)}
+          />
+        </div>
+
+        {/* فیلد اسلاگ همراه با لیبل */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">اسلاگ (شناسه یکتا)</span>
+          <input
+            className="input-info bg-gray-50/50 dark:bg-dark-900/40 border-dashed cursor-default select-none opacity-80 focus:ring-0! focus:border-dashed! focus:border-custom-gray-200! dark:focus:border-white/10!"
+            placeholder="اسلاگ به صورت خودکار ساخته می‌شود"
+            value={formData.slug}
+            readOnly
+          />
+        </div>
       </div>
     </form>
   );

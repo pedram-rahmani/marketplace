@@ -12,7 +12,6 @@ const useClickOutside = (
         (ref) => ref.current && ref.current.contains(e.target as Node)
       );
 
-      // اگر کلیک داخل مودال نبود، تابع بسته شدن را صدا بزن
       if (!isInside) {
         onClickOutside();
       }
@@ -21,7 +20,6 @@ const useClickOutside = (
   );
 
   useEffect(() => {
-    // استفاده از mousedown یا click (فرقی نمی‌کند وقتی شرط بالا دقیق باشد)
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);

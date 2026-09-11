@@ -15,13 +15,16 @@ return new class extends Migration
             $table->text('description')->nullable()->comment('توضیحات');
             $table->unsignedInteger('price')->nullable()->comment('قیمت (تومان) - تغییر به unsignedInteger برای محاسبات');
             $table->unsignedTinyInteger('discount')->nullable()->comment('تخفیف (درصد)');
+            $table->timestamp('discount_starts_at')->nullable()->comment('تاریخ و زمان شروع تخفیف');
+            $table->timestamp('discount_expires_at')->nullable()->comment('تاریخ و زمان انقضای تخفیف');
             $table->decimal('rate', 2, 1)->nullable()->comment('امتیاز (مثلا 4.5)');
             $table->string('img')->nullable()->comment('مسیر تصویر');
             $table->json('options')->nullable()->comment('ویژگی‌های انتخابی محصول (سایز، اندازه صفحه و...)');
 
             $table->foreignId('category_id')
                   ->constrained('categories')
-                  ->onDelete('cascade');
+                  ->onDelete('cascade')
+                  ->comment('شناسه دسته‌بندی');
 
             $table->timestamps();
         });

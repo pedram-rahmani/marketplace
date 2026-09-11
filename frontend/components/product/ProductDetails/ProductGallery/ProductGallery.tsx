@@ -23,6 +23,8 @@ export interface GalleryMedia {
 interface ProductGalleryProps {
   mediaItems?: GalleryMedia[];
   images?: string[];
+  showGallery?: boolean;
+  hideGallery?: () => void;
 }
 
 export default function ProductGallery({
@@ -43,16 +45,13 @@ export default function ProductGallery({
           source: "official" as MediaSource,
         }));
 
-  // State to hold and sync media items including their read-only like/dislike stats
   const [allMedia, setAllMedia] = useState<GalleryMedia[]>(initialMedia);
   const [activeTab, setActiveTab] = useState<"official" | "user">("official");
   
-  //main media display index (always 0)
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Sync state if props change
   useEffect(() => {
     setAllMedia(initialMedia);
   }, [mediaItems, images]);
@@ -110,11 +109,11 @@ export default function ProductGallery({
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* main media display (productDetails) */}
+    <div className="flex flex-col gap-3 w-full max-w-full overflow-hidden">
+      {/* main media display */}
       <div
         onClick={() => openLightbox(0)}
-        className="relative aspect-video max-h-80 w-full overflow-hidden rounded-2xl bg-gray-900/80 border border-white/10 p-2.5 shadow-lg flex items-center justify-center cursor-pointer group mx-auto"
+        className="relative aspect-video max-h-64 sm:max-h-80 w-full overflow-hidden rounded-2xl bg-gray-900/85 border border-white/10 p-2.5 shadow-lg flex items-center justify-center cursor-pointer group mx-auto"
       >
         {activeMainMedia ? (
           renderMediaContent(activeMainMedia, false)
@@ -134,9 +133,9 @@ export default function ProductGallery({
         )}
       </div>
 
-      {/* thumbnails */}
+      {/* thumbnails - ریسپانسیو و اسکرول‌پذیر در موبایل برای جلوگیری از به‌هم‌ریختگی */}
       {allMedia.length > 1 && (
-        <div className="grid grid-cols-5 sm:grid-cols-6 gap-2">
+        <div className="flex sm:grid grid-cols-5 sm:grid-cols-6 gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 max-w-full scrollbar-none">
           {allMedia.slice(0, 6).map((item, index) => {
             const thumbUrl = item.type === "video" && item.thumbnail ? item.thumbnail : item.url;
 
@@ -147,7 +146,7 @@ export default function ProductGallery({
                 onClick={() => {
                   openLightbox(index);
                 }}
-                className="relative aspect-square overflow-hidden rounded-xl border border-white/10 opacity-60 hover:opacity-100 transition-all bg-gray-900/50 p-0.5 cursor-pointer hover:border-cyan-400"
+                className="relative aspect-square size-16 sm:size-auto shrink-0 overflow-hidden rounded-xl border border-white/10 opacity-60 hover:opacity-100 transition-all bg-gray-900/50 p-0.5 cursor-pointer hover:border-cyan-400"
               >
                 <img
                   src={getFullUrl(thumbUrl)}

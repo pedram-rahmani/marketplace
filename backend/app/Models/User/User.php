@@ -24,6 +24,7 @@ class User extends Authenticatable
         'permissions',
         'status',
         'phone',
+        'avatar',
         'admin_notes',
         'last_login_at',
     ];
@@ -37,9 +38,7 @@ class User extends Authenticatable
         'permissions' => 'array',
     ];
 
-    /**
-     * شماره تلفن فعال کاربر (اولویت با شماره ثبت‌شده در آدرس پیش‌فرض است)
-     */
+    //user's active phone number (default= number in addresses table if exists, otherwise the phone number in users table)
     protected function activePhone(): Attribute
     {
         return Attribute::make(

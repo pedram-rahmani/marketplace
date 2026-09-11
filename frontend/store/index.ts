@@ -4,6 +4,7 @@ import cartReducer from "./slices/cartSlice";
 import walletReducer from "./slices/walletSlice";
 import settingReducer from "./slices/settingSlice";
 import reviewsReducer from "./slices/reviewsSlice";
+import categoryReducer from "./slices/categorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     wallet: walletReducer,
     setting: settingReducer,
     reviews: reviewsReducer,
+    categories: categoryReducer,
   },
 });
 

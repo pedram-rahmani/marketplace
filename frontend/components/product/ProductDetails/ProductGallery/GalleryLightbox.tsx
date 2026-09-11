@@ -45,7 +45,7 @@ export default function GalleryLightbox({
         className="absolute top-5 left-5 z-100001 p-2.5 rounded-full bg-gray-800/90 text-white shadow-xl border border-white/10 cursor-pointer hover:bg-gray-700 transition-colors"
         title="بستن (Esc)"
       >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="size-4!" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>

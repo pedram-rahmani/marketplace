@@ -7,6 +7,7 @@ use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -55,11 +56,21 @@ class UserController extends Controller
             'status' => 'sometimes|string|in:active,banned',
             'phone' => 'nullable|string|max:20',
             'email' => 'sometimes|email|unique:users,email,' . $id,
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'postal_address' => 'nullable|string',
             'admin_notes' => 'nullable|string',
             'permissions' => 'nullable|array',
             'permissions.*' => 'string|in:' . implode(',', $allowedPermissions),
         ]);
+
+        // new avatar management
+        $avatarPath = $user->avatar;
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
 
         // user basic info
         $user->update([
@@ -69,6 +80,7 @@ class UserController extends Controller
             'role' => $validated['role'] ?? $user->role,
             'status' => $validated['status'] ?? $user->status,
             'phone' => $validated['phone'] ?? $user->phone,
+            'avatar' => $avatarPath,
             'admin_notes' => $validated['admin_notes'] ?? $user->admin_notes,
             'permissions' => $validated['permissions'] ?? $user->permissions,
         ]);
@@ -117,6 +129,11 @@ class UserController extends Controller
     {
         $user = User::withTrashed()->findOrFail($id);
         $this->authorize('forceDelete', $user);
+
+        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
         $user->forceDelete();
         return response()->json(['message' => 'کاربر برای همیشه حذف شد']);
     }
@@ -169,13 +186,24 @@ class UserController extends Controller
             'name' => 'sometimes|string|max:255',
             'phone' => 'nullable|string|max:20',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'postal_address' => 'nullable|string',
         ]);
+
+        // avatar management
+        $avatarPath = $user->avatar;
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
 
         $user->update([
             'name' => $validated['name'] ?? $user->name,
             'email' => $validated['email'] ?? $user->email,
             'phone' => $validated['phone'] ?? $user->phone,
+            'avatar' => $avatarPath,
         ]);
 
         if ($request->has('postal_address') || $request->has('phone')) {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ProductBoxSearch from "@/components/product/ProductBox/ProductBoxSearch";
-import { getProducts } from "@/server/product";
+import { getProducts } from "@/services/product";
 import { ProductSummary } from "@/types/product";
 
 export default function ProductResults({ initialProducts, categorySlug, cleanTitle }: { 
@@ -13,9 +13,8 @@ export default function ProductResults({ initialProducts, categorySlug, cleanTit
   const [products, setProducts] = useState<ProductSummary[]>(initialProducts || []);
   const [isLoading, setIsLoading] = useState(!initialProducts);
 
-  // اگر کاربر فیلتر جدیدی اعمال کرد، در کلاینت فچ کن
   useEffect(() => {
-    if (initialProducts) return; // داده اولیه موجود است
+    if (initialProducts) return;
 
     const fetchResults = async () => {
       setIsLoading(true);

@@ -140,20 +140,20 @@ input::placeholder {
 }
 
 textarea {
-    outline: none;
-    border: none;
-    resize: none;
-    scrollbar-width: thin;
-    scrollbar-color: #64748b transparent;
-  }
+  outline: none;
+  border: none;
+  resize: none;
+  scrollbar-width: thin;
+  scrollbar-color: #64748b transparent;
+}
 
-  textarea::-webkit-scrollbar {
-    width: 6px;
-  }
-  textarea::-webkit-scrollbar-thumb {
-    background-color: #64748b;
-    border-radius: 10px;
-  }
+textarea::-webkit-scrollbar {
+  width: 6px;
+}
+textarea::-webkit-scrollbar-thumb {
+  background-color: #64748b;
+  border-radius: 10px;
+}
 
 button {
   outline: none;
@@ -273,7 +273,7 @@ body::-webkit-scrollbar-thumb:hover {
    Layout Components (Fixed for v4 Pixels)
 ------------------------------------------------------- */
 .main {
-  @apply max-w-480 mx-auto overflow-x-hidden mt-20 mb-20 pb-24 md:mt-10 md:mb-0;
+  @apply max-w-480 mx-auto overflow-x-hidden mt-16 mb-20 pb-24 md:mt-10 md:mb-0;
 }
 
 .container {
@@ -296,12 +296,108 @@ body::-webkit-scrollbar-thumb:hover {
 /* -------------------------------------------------------
    Components & Buttons
 ------------------------------------------------------- */
+/* action btn (base) */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-width: 1px;
+  box-shadow:
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+.btn-action:active {
+  transform: scale(0.95);
+}
+
+/* Add / Create Button */
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-width: 1px;
+  cursor: pointer;
+  transition: all 200ms;
+  @apply text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20 active:scale-95;
+}
+.btn-add:hover {
+  background-color: rgb(59 130 246 / 0.25);
+}
+
+/* Edit Button */
+.btn-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-width: 1px;
+  cursor: pointer;
+  transition: all 200ms;
+  @apply text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20 active:scale-95;
+}
+.btn-edit:hover {
+  background-color: rgb(139 92 246 / 0.25);
+}
+
+/* Delete Button */
+.btn-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-width: 1px;
+  cursor: pointer;
+  transition: all 200ms;
+  @apply text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20 active:scale-95;
+}
+.btn-delete:hover {
+  background-color: rgb(244 63 94 / 0.25);
+}
+
+/* Disabled State for All Action Btns */
+.btn-action:disabled,
+.btn-add:disabled,
+.btn-edit:disabled,
+.btn-delete:disabled {
+  background-color: rgb(243 244 246) !important;
+  color: rgb(156 163 175) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  border-color: transparent !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+.dark .btn-action:disabled,
+.dark .btn-add:disabled,
+.dark .btn-edit:disabled,
+.dark .btn-delete:disabled {
+  background-color: var(--color-dark-800) !important;
+  color: rgb(75 85 99) !important;
+}
+
+/* -------------------------------------------------------
+   Navigation Menu
+------------------------------------------------------- */
 .nav-menu-it-a {
   @apply flex w-full py-2.5 pr-3 pl-2.5 items-center justify-between
          border-l-2 border-l-transparent transition-all;
 }
-
-
 
 .menu-container > li > .active-menu {
   @apply text-sky-500 bg-sky-500/10 border-l-4 border-sky-500;
@@ -460,7 +556,10 @@ body::-webkit-scrollbar-thumb:hover {
 .review-reply-collapse {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  transition:
+    grid-template-rows 0.3s ease-in-out,
+    opacity 0.3s ease-in-out,
+    visibility 0.3s ease-in-out;
   opacity: 0;
   visibility: hidden;
 }

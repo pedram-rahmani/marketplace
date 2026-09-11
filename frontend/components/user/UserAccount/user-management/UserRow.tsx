@@ -56,27 +56,25 @@ export default function UserRow({
     return "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400";
   };
 
-  const isAdmin = user.role === "admin";
-
   const Icons = {
     ArrowUp: () => (
-      <svg viewBox="0 0 24 24" className="size-4!">
+      <svg viewBox="0 0 24 24" className="size-3.5!" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18" />
       </svg>
     ),
     ArrowDown: () => (
-      <svg viewBox="0 0 24 24" className="size-4!">
+      <svg viewBox="0 0 24 24" className="size-3.5!" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3" />
       </svg>
     ),
     Edit: () => (
-      <svg className="size-4!" viewBox="0 0 24 24">
+      <svg className="size-3.5!" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
       </svg>
     ),
     Trash: () => (
-      <svg className="size-4!" viewBox="0 0 24 24">
+      <svg className="size-3.5!" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <polyline points="3 6 5 6 21 6" />
         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
       </svg>
@@ -130,21 +128,21 @@ export default function UserRow({
           </span>
         </td>
         <td className="px-6 py-4 text-sm whitespace-nowrap">
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-2.5 items-center">
             {/* promote */}
             {permissions.canPromote && user.role === "user" && (
               <button
                 onClick={() => onPromote(user.id)}
-                className="flex items-center text-blue-600/70 font-bold text-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-400/10 dark:to-teal-400/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all duration-200 active:scale-95 shadow-sm"
               >
                 <Icons.ArrowUp /> ارتقا
               </button>
             )}
-            {/* demote */}
+            {/* demote - استایل اختصاصی کهربایی/نارنجی ملایم */}
             {permissions.canDemote && user.role === "co-admin" && (
               <button
                 onClick={() => onDemote(user.id)}
-                className="flex items-center text-orange-600/70 font-bold text-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-amber-500/10 dark:bg-amber-400/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-200 active:scale-95 shadow-sm"
               >
                 <Icons.ArrowDown /> تنزل
               </button>
@@ -153,9 +151,9 @@ export default function UserRow({
             {isAuthorized && permissions.canEditUser && canEditUser(user) && (
               <button
                 onClick={() => onEdit(user)}
-                className="text-violet-600 font-bold"
+                className="btn-edit"
               >
-                <Icons.Edit />
+                <Icons.Edit /> ویرایش
               </button>
             )}
 
@@ -163,9 +161,9 @@ export default function UserRow({
             {isAuthorized && permissions.canDelete && canDeleteUser(user) && (
               <button
                 onClick={() => onDelete(user.id)}
-                className="text-red-600 font-bold"
+                className="btn-delete"
               >
-                <Icons.Trash />
+                <Icons.Trash /> حذف
               </button>
             )}
           </div>
@@ -217,38 +215,38 @@ export default function UserRow({
           {user.status === "active" ? "فعال" : "مسدود"}
         </span>
 
-        <div className="flex gap-3">
+        <div className="flex gap-2.5 items-center">
           {/* promote */}
           {permissions.canPromote && user.role === "user" && (
             <button
               onClick={() => onPromote(user.id)}
-              className="text-blue-600"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-400/10 dark:to-teal-400/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all duration-200 active:scale-95 shadow-sm"
             >
-              <Icons.ArrowUp />
+              <Icons.ArrowUp /> ارتقا
             </button>
           )}
-          {/* demote */}
+          {/* demote - استایل اختصاصی کهربایی/نارنجی ملایم */}
           {permissions.canDemote && user.role === "co-admin" && (
             <button
               onClick={() => onDemote(user.id)}
-              className="text-orange-600"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-amber-500/10 dark:bg-amber-400/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-all duration-200 active:scale-95 shadow-sm"
             >
-              <Icons.ArrowDown />
+              <Icons.ArrowDown /> تنزل
             </button>
           )}
           {/* edit */}
           {permissions.canEditUser && canEditUser(user) && (
-            <button onClick={() => onEdit(user)} className="text-violet-600">
-              <Icons.Edit />
+            <button onClick={() => onEdit(user)} className="btn-edit">
+              <Icons.Edit /> ویرایش
             </button>
           )}
           {/* delete */}
           {permissions.canDelete && canDeleteUser(user) && (
             <button
               onClick={() => onDelete(user.id)}
-              className="text-red-600 font-bold"
+              className="btn-delete"
             >
-              <Icons.Trash />
+              <Icons.Trash /> حذف
             </button>
           )}
 

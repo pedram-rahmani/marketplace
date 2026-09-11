@@ -1,19 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import axiosInstance from "@/lib/axiosInstance";
+import { useRef } from "react";
 import MessageModal from "@/components/feedback/MessageModal/MessageModal";
+import { SkeletonAvatar } from "@/components/ui/Skeletons/Skeletons";
+import { useProfileForm, EditProfileFormValues } from "@/store/hooks/useProfileForm";
+import useLockBodyScroll from "@/store/hooks/useLockBodyScroll";
+import useClickOutside from "@/store/hooks/useClickOutside";
 
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialData: {
-    name: string;
-    phone: string;
-    email: string;
-    address: string;
-  };
-  onSuccess: (updatedData: any) => void;
+  initialData: EditProfileFormValues;
+  onSuccess: (updatedData: EditProfileFormValues) => void;
 }
 
 export default function EditProfileModal({
@@ -22,62 +20,35 @@ export default function EditProfileModal({
   initialData,
   onSuccess,
 }: EditProfileModalProps) {
-  const [formData, setFormData] = useState(initialData);
-  const [loading, setLoading] = useState(false);
+  const {
+    formData,
+    loading,
+    avatarLoading,
+    isProcessing,
+    messageModalOpen,
+    setMessageModalOpen,
+    apiResponse,
+    fileInputRef,
+    handleInputChange,
+    handleAvatarChange,
+    getAvatarUrl,
+    handleSubmit,
+  } = useProfileForm(initialData, isOpen, onSuccess, onClose);
 
-  // استیت‌های مربوط به مدال پیام
-  const [messageModalOpen, setMessageModalOpen] = useState(false);
-  const [apiResponse, setApiResponse] = useState<any>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  useLockBodyScroll(isOpen);
+  useClickOutside(onClose, modalRef);
 
   if (!isOpen) return null;
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const payload = {
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        postal_address: formData.address,
-      };
-
-      const res = await axiosInstance.put("/user/profile", payload);
-      
-      // تنظیم ریسپانس موفقیت (مثلا استاتوس 200 به همراه دیتای برگشتی)
-      setApiResponse({
-        status: res.status || 200,
-        ...res.data
-      });
-      setMessageModalOpen(true);
-
-      // ارسال دیتای جدید به والد
-      onSuccess(payload);
-    } catch (err: any) {
-      console.error("خطا در ویرایش اطلاعات:", err);
-      // ارسال استاتوس کد خطا (مثلا 422 یا 500) و جزئیات ارور
-      setApiResponse({
-        status: err.response?.status || 500,
-        errors: err.response?.data?.errors,
-        message: err.response?.data?.message
-      });
-      setMessageModalOpen(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-lg rounded-2xl p-6 shadow-xl space-y-6">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+        <div 
+          ref={modalRef}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-lg rounded-2xl p-6 shadow-xl space-y-6 my-8"
+        >
           <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
             <h3 className="font-bold text-gray-900 dark:text-white text-base">
               ویرایش اطلاعات حساب کاربری
@@ -92,6 +63,41 @@ export default function EditProfileModal({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex items-center gap-4 pb-2">
+              <div className="size-16 rounded-2xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center text-violet-600 font-bold overflow-hidden shrink-0 shadow-sm relative">
+                {avatarLoading ? (
+                  <SkeletonAvatar size="size-16 rounded-2xl" />
+                ) : getAvatarUrl() ? (
+                  <img src={getAvatarUrl() || ""} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-xl">{formData.name ? formData.name.charAt(0).toUpperCase() : "U"}</span>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-900 dark:text-white">تصویر پروفایل</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                  {isProcessing ? "در حال فشرده‌سازی..." : "عکس فعلی شما در پیش‌نمایش قابل مشاهده است"}
+                </span>
+                
+                <input 
+                  ref={fileInputRef}
+                  type="file" 
+                  id="avatar-upload"
+                  accept="image/jpeg,image/png,image/webp" 
+                  className="hidden" 
+                  onChange={handleAvatarChange}
+                  disabled={isProcessing}
+                />
+                <label 
+                  htmlFor="avatar-upload"
+                  className="inline-block w-fit cursor-pointer mt-1 py-1 px-3 rounded-lg text-xs font-medium bg-violet-100 text-violet-700 hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300 transition-colors"
+                >
+                  {isProcessing ? "در حال پردازش..." : "تغییر عکس"}
+                </label>
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                 نام و نام خانوادگی
@@ -157,7 +163,7 @@ export default function EditProfileModal({
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || isProcessing}
                 className="px-5 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-medium rounded-xl transition shadow-lg shadow-violet-600/20 cursor-pointer disabled:opacity-50"
               >
                 {loading ? "در حال ذخیره..." : "ذخیره تغییرات"}
@@ -167,13 +173,11 @@ export default function EditProfileModal({
         </div>
       </div>
 
-      {/* مدال پیام تایید یا ارور */}
       <MessageModal
         isOpen={messageModalOpen}
         onClose={() => setMessageModalOpen(false)}
         response={apiResponse}
         onAfterClose={() => {
-          // بعد از بسته شدن مدال در صورت موفقیت‌آمیز بودن، مودال اصلی ویرایش هم بسته می‌شود
           if (apiResponse?.status >= 200 && apiResponse?.status < 300) {
             onClose();
           }

@@ -25,11 +25,12 @@ export default function ProductBox({ productInfos }: ProductBoxProps) {
   const { finalPrice, isFree } = useDiscount(price, finalDiscount);
 
   return (
-    <div className="flex flex-col shadow-md rounded-lg max-w-sm bg-custom-gray-100 dark:bg-ui-blue-800 border border-custom-gray-200 dark:border-dark-600 overflow-hidden group">
+    // اضافه کردن h-full برای اینکه تمام کارت‌های یک سطر ارتفاع یکسانی داشته باشند
+    <div className="flex flex-col h-full shadow-md rounded-lg w-full bg-custom-gray-100 dark:bg-ui-blue-800 border border-custom-gray-200 dark:border-dark-600 overflow-hidden group">
       {/* Product Image */}
       <Link
         href={`/products/${slug}`}
-        className="relative w-full h-56 block overflow-hidden bg-custom-gray-100 dark:bg-ui-blue-800 rounded-t-lg"
+        className="relative w-full h-56 block overflow-hidden bg-custom-gray-100 dark:bg-ui-blue-800 rounded-t-lg shrink-0"
       >
         <Image
           src={getImagePath(img)}
@@ -66,9 +67,10 @@ export default function ProductBox({ productInfos }: ProductBoxProps) {
       </Link>
 
       {/* Product Details */}
-      <div className="flex flex-col grow px-4 pb-4">
-        <div className="grow">
-          <h3 className="line-clamp-2 mb-2 font-bold text-dark-900 dark:text-white">
+      <div className="flex flex-col flex-1 justify-between p-4">
+        <div className="space-y-2">
+          {/* عنوان با ارتفاع ثابت دو خط */}
+          <h3 className="line-clamp-2 h-12 font-bold text-dark-900 dark:text-white text-sm sm:text-base">
             <Link
               href={`/products/${slug}`}
               className="hover:text-ui-green-700 transition-colors"
@@ -77,10 +79,13 @@ export default function ProductBox({ productInfos }: ProductBoxProps) {
             </Link>
           </h3>
 
-          {description && (
-            <p className="text-sm line-clamp-2 opacity-70 dark:text-text-on-dark/70">
+          {/* توضیحات با ارتفاع و تعداد خطوط کاملاً فیکس */}
+          {description ? (
+            <p className="text-xs sm:text-sm line-clamp-2 h-10 opacity-70 dark:text-text-on-dark/70">
               {description}
             </p>
+          ) : (
+            <div className="h-10" /> // فضای خالی برای محصولاتی که توضیحات ندارند تا قالب به هم نریزد
           )}
         </div>
 

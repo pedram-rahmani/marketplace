@@ -83,10 +83,12 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'discount_starts_at' => 'nullable|date',
+            'discount_expires_at' => 'nullable|date|after_or_equal:discount_starts_at',
         ]);
 
         return DB::transaction(function () use ($request) {
-            $data = $request->only('name', 'slug', 'price', 'discount', 'category_id');
+            $data = $request->only('name', 'slug', 'price', 'discount', 'discount_starts_at', 'discount_expires_at', 'category_id');
             $data['slug'] = Str::slug($request->name, '-');
 
             if ($request->has('options')) {
@@ -153,10 +155,12 @@ class ProductController extends Controller
             'slug' => 'required|string|unique:products,slug,' . $id,
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
+            'discount_starts_at' => 'nullable|date',
+            'discount_expires_at' => 'nullable|date|after_or_equal:discount_starts_at',
         ]);
 
         return DB::transaction(function () use ($request, $product) {
-            $updateData = $request->only('name', 'slug', 'price', 'discount', 'category_id');
+            $updateData = $request->only('name', 'slug', 'price', 'discount', 'discount_starts_at', 'discount_expires_at', 'category_id');
             $updateData['slug'] = Str::slug($request->name, '-');
 
             if ($request->has('options')) {

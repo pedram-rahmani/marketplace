@@ -1,24 +1,37 @@
 interface DiscountResult {
   finalPrice: string;
+  discountAmount: number;
   isFree: boolean;
 }
 
-export default function useDiscount(price: number, discount: number): DiscountResult {
-  if (!price) return { finalPrice: "۰", isFree: false };
+export default function useDiscount(
+  price: number, 
+  discountValue: number, 
+  isPercent: boolean = true
+): DiscountResult {
+  if (!price || price <= 0) return { finalPrice: "۰", discountAmount: 0, isFree: false };
 
-  const finalDiscount = discount ?? 0;
+  const discount = discountValue ?? 0;
 
-  if (finalDiscount === 100) {
+  // اگر تخفیف صددرصد بود
+  if (isPercent && discount === 100) {
     return {
       finalPrice: "رایگان!",
+      discountAmount: price,
       isFree: true
     };
   }
 
-  const result = price - price * (finalDiscount / 100);
+  // محاسبه مبلغ تخفیف بر اساس درصد یا مبلغ ثابت
+  const calculatedDiscountAmount = isPercent 
+    ? price * (discount / 100) 
+    : discount;
+
+  const result = Math.max(0, price - calculatedDiscountAmount);
 
   return {
     finalPrice: Math.floor(result).toLocaleString("fa-IR"),
+    discountAmount: Math.floor(calculatedDiscountAmount),
     isFree: false
   };
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Category } from "@/types/category"; 
 import MenuItem from "./MenuItem";
 
 interface MegaMenuProps {
   showMenu: boolean;
   menuItems: Category[];
+  onClose: () => void;
 }
 
 interface SelectedState {
@@ -18,12 +19,19 @@ interface SelectedState {
 export default function MegaMenu({
   showMenu,
   menuItems,
+  onClose,
 }: MegaMenuProps) {
   const [selected, setSelected] = useState<SelectedState>({
     parentId: null,
     parentId2: null,
     parentId3: null,
   });
+
+  useEffect(() => {
+    if (!showMenu) {
+      setSelected({ parentId: null, parentId2: null, parentId3: null });
+    }
+  }, [showMenu]);
 
   const maxLevel = useMemo(() => {
     if (menuItems.length === 0) return 1;
@@ -47,22 +55,26 @@ export default function MegaMenu({
     [menuItems, selected.parentId2]
   );
 
-  const handleMouseEnterParent = useCallback((id: number) => {
-    setSelected({ parentId: id, parentId2: null, parentId3: null });
+  const handleSelectParent = useCallback((id: number) => {
+    setSelected((prev) => ({
+      parentId: prev.parentId === id ? id : id,
+      parentId2: null,
+      parentId3: null,
+    }));
   }, []);
 
-  const handleMouseEnterChild = useCallback((id: number) => {
+  const handleSelectChild = useCallback((id: number) => {
     setSelected((prev) => ({ ...prev, parentId2: id, parentId3: null }));
   }, []);
 
-  const handleMouseEnterLevel3 = useCallback((id: number) => {
+  const handleSelectLevel3 = useCallback((id: number) => {
     setSelected((prev) => ({ ...prev, parentId3: id }));
   }, []);
 
   const renderMenuItems = (
     items: Category[],
     level: number,
-    onHoverHandler?: (id: number) => void,
+    selectHandler: (id: number) => void,
   ) =>
     items.map((item) => {
       const isActive = 
@@ -74,11 +86,13 @@ export default function MegaMenu({
         <MenuItem
           key={item.id}
           item={item}
-          onHover={onHoverHandler ? () => onHoverHandler(item.id) : undefined}
+          onHover={() => selectHandler(item.id)}
+          onClick={() => selectHandler(item.id)}
           isActive={isActive}
           isLastLevel={level === maxLevel}
           menuItems={menuItems}
           maxLevel={maxLevel}
+          onCloseMenu={onClose}
         />
       );
     });
@@ -92,7 +106,7 @@ export default function MegaMenu({
     >
       {/* Level 1 */}
       <ul className="flex flex-col h-full w-64 px-1 ml-0.5 overflow-y-auto scrollbar space-y-1 rounded-br-lg">
-        {renderMenuItems(catOne, 1, handleMouseEnterParent)}
+        {renderMenuItems(catOne, 1, handleSelectParent)}
       </ul>
 
       {/* Level 2 & 3 */}
@@ -100,14 +114,14 @@ export default function MegaMenu({
         {catTwo.length > 0 && (
           <div className="w-64 py-1 flex">
             <ul className="flex flex-col h-full w-64 px-1 ml-0.5 overflow-y-auto scrollbar space-y-1">
-              {renderMenuItems(catTwo, 2, handleMouseEnterChild)}
+              {renderMenuItems(catTwo, 2, handleSelectChild)}
             </ul>
           </div>
         )}
         {catThree.length > 0 && (
           <div className="w-64 py-1 bg-inherit">
             <ul className="flex flex-col h-full w-64 ml-0.5 overflow-y-auto scrollbar space-y-1">
-              {renderMenuItems(catThree, 3, handleMouseEnterLevel3)}
+              {renderMenuItems(catThree, 3, handleSelectLevel3)}
             </ul>
           </div>
         )}

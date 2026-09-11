@@ -24,11 +24,31 @@ export type ProductIntroduction = {
   updated_at?: string;
 };
 
-// dynamic selection options (e.g. Size, Screen Size, Storage)
 export type ProductOption = {
   id?: number | string;
   title: string;
   items: string[];
+};
+
+export type SpecificationItem = {
+  id: string | number;
+  value: string;
+  feature?: {
+    title: string;
+  };
+};
+
+// تایپ رنگ محصول
+export type ProductColor = {
+  id?: number | string;
+  name: string;
+  hex: string;
+};
+
+// تایپ سایز محصول
+export type ProductSize = {
+  id: number | string;
+  name: string;
 };
 
 export type ProductSummary = {
@@ -42,7 +62,11 @@ export type ProductSummary = {
   img: string | null;
   category_id?: number;
   warranties?: Warranty[];
-  options?: ProductOption[]; // Dynamic selectable options for summary cards
+  options?: ProductOption[];
+  specifications?: SpecificationItem[];
+  colors?: ProductColor[];
+  sizes?: ProductSize[];
+  gallery?: string[];
 };
 
 export type PaginationOptions = {
@@ -64,6 +88,10 @@ export interface Product {
   updated_at?: string;
   warranties?: Warranty[];
   introductions?: ProductIntroduction[];
-  options?: ProductOption[]; // Dynamic selectable options (e.g. Size, Screen Size, Storage)
+  options?: ProductOption[];
+  specifications?: SpecificationItem[];
+  colors?: ProductColor[];
+  sizes?: ProductSize[];
+  gallery?: string[];
   [key: string]: any;
 }

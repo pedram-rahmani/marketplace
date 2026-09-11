@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { useProduct } from "@/store/hooks/useProduct";
 import ProductGallery from "../ProductDetails/ProductGallery/ProductGallery";
+import { Product } from "@/types/product";
 
 export default function ProductShowcase() {
-  const product = useProduct();
+  const product = useProduct() as Product | null;
   const [showGallery, setShowGallery] = useState(false);
 
   // disable window scroll
@@ -22,16 +23,17 @@ export default function ProductShowcase() {
 
   return (
     <>
-      <div className="flex flex-row-reverse col-span-full lg:col-span-7 max-w-140">
+      <div className="flex flex-col lg:flex-row-reverse col-span-full lg:col-span-7 w-full max-w-full items-center lg:items-start justify-center gap-4">
+
         <div
-          className="flex flex-col mx-3 my-1 gap-y-4 
+          className="flex flex-row lg:flex-col mx-3 my-1 gap-x-6 lg:gap-x-0 gap-y-4 
                      *:relative *:flex *:items-center *:cursor-pointer
                      [*_svg]:size-4 [*_div:last-child_svg]:stroke-1"
         >
-          <div className="flex flex-col gap-y-4 w-full">
+          <div className="flex flex-row lg:flex-col gap-x-4 lg:gap-y-4 w-full">
             {/* Favorite */}
-            <div className="flex items-center justify-end gap-x-3 group cursor-pointer">
-              <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+            <div className="flex items-center justify-end gap-x-2 group cursor-pointer">
+              <span className="hidden lg:inline text-[11px] font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                 اضافه به علاقمندی‌ها
               </span>
               <div className="w-6 flex justify-center">
@@ -52,8 +54,8 @@ export default function ProductShowcase() {
             </div>
 
             {/* Share */}
-            <div className="flex items-center justify-end gap-x-3 group cursor-pointer">
-              <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+            <div className="flex items-center justify-end gap-x-2 group cursor-pointer">
+              <span className="hidden lg:inline text-[11px] font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                 به اشتراک گذاری کالا
               </span>
               <div className="w-6 flex justify-center">
@@ -74,8 +76,8 @@ export default function ProductShowcase() {
             </div>
 
             {/* Chart */}
-            <div className="flex items-center justify-end gap-x-3 group cursor-pointer">
-              <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+            <div className="flex items-center justify-end gap-x-2 group cursor-pointer">
+              <span className="hidden lg:inline text-[11px] font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                 نمودار قیمت کالا
               </span>
               <div className="w-6 flex justify-center">
@@ -92,18 +94,18 @@ export default function ProductShowcase() {
         </div>
 
         {/* image and details */}
-        <div className="flex flex-col gap-y-3 items-center">
-          <div className="flex flex-col">
+        <div className="flex flex-col gap-y-3 items-center w-full max-w-md mx-auto">
+          <div className="flex flex-col w-full px-4 lg:px-0">
             <img
               src={product?.img || ""}
               alt={product?.name || ""}
-              className="rounded-xl"
+              className="rounded-xl w-full h-auto max-h-87.5 object-contain mx-auto"
             />
             <div className="text-sm">{/* other infos */}</div>
           </div>
 
-          {/* Gallery - بهینه‌سازی شده برای نسخه ۴ */}
-          <div className="flex gap-x-2 items-center *:bg-white *:cursor-pointer *:border *:border-gray-300 *:rounded-md *:overflow-hidden [*_img]:p-2">
+          {/* Gallery */}
+          <div className="flex gap-x-2 items-center overflow-x-auto max-w-full p-1 *:bg-white *:cursor-pointer *:border *:border-gray-300 *:rounded-md *:overflow-hidden *:shrink-0 [*_img]:p-2 [*_img]:size-16 [*_img]:object-contain">
             <div>
               <img src="/images/products/8.webp" alt="" />
             </div>
@@ -119,14 +121,14 @@ export default function ProductShowcase() {
 
             {/* gallery more... */}
             <div
-              className="relative flex items-center justify-center"
+              className="relative flex items-center justify-center size-16"
               onClick={() => setShowGallery(true)}
             >
-              <div className="blur-sm opacity-50 p-1">
-                <img src="/images/products/8.webp" alt="" />
+              <div className="blur-sm opacity-50 p-1 size-full flex items-center justify-center">
+                <img src="/images/products/8.webp" alt="" className="size-full object-contain" />
               </div>
-              <div className="absolute size-7">
-                <svg viewBox="0 0 24 24">
+              <div className="absolute size-7 flex items-center justify-center text-gray-800 dark:text-white">
+                <svg viewBox="0 0 24 24" fill="currentColor">
                   <path d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                 </svg>
               </div>
