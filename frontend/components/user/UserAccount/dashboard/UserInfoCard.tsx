@@ -34,7 +34,7 @@ export default function UserInfoCard({ user, onOpenEditModal }: UserInfoCardProp
 
   return (
     <div className="bg-white dark:bg-dark-900 border border-gray-200/80 dark:border-white/5 p-4 sm:p-6 rounded-2xl shadow-sm space-y-5">
-      {/* هدر کارت: تایتل و دکمه ویرایش */}
+      {/* cart header */}
       <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/5 pb-4">
         <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">
           اطلاعات حساب کاربری
@@ -49,7 +49,7 @@ export default function UserInfoCard({ user, onOpenEditModal }: UserInfoCardProp
         </button>
       </div>
 
-      {/* بخش آواتار در سمت راست، و نام کاربری دقیقا وسطِ زیرِ عکس */}
+      {/* avatar */}
       <div className="flex flex-col items-start py-2">
         <div className="flex flex-col items-center">
           <div className="w-16 h-16 rounded-2xl bg-linear-to-tr from-primary to-info flex items-center justify-center text-white font-bold shadow-sm overflow-hidden shrink-0 ring-4 ring-gray-50 dark:ring-white/5 mb-2">
@@ -72,7 +72,7 @@ export default function UserInfoCard({ user, onOpenEditModal }: UserInfoCardProp
         </div>
       </div>
 
-      {/* گرید اطلاعات */}
+      {/* information */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 text-sm">
         <div className="bg-gray-50/50 dark:bg-white/2 sm:bg-transparent p-3! sm:p-0 rounded-xl border border-gray-100 dark:border-white/5 sm:border-0">
           <span className="block dark:text-text-on-dark/50 text-xs mb-1">نام و نام خانوادگی</span>

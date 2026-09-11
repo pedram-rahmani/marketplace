@@ -25,7 +25,6 @@ export default function ProductBox({ productInfos }: ProductBoxProps) {
   const { finalPrice, isFree } = useDiscount(price, finalDiscount);
 
   return (
-    // اضافه کردن h-full برای اینکه تمام کارت‌های یک سطر ارتفاع یکسانی داشته باشند
     <div className="flex flex-col h-full shadow-md rounded-lg w-full bg-custom-gray-100 dark:bg-ui-blue-800 border border-custom-gray-200 dark:border-dark-600 overflow-hidden group">
       {/* Product Image */}
       <Link
@@ -79,13 +78,12 @@ export default function ProductBox({ productInfos }: ProductBoxProps) {
             </Link>
           </h3>
 
-          {/* توضیحات با ارتفاع و تعداد خطوط کاملاً فیکس */}
           {description ? (
             <p className="text-xs sm:text-sm line-clamp-2 h-10 opacity-70 dark:text-text-on-dark/70">
               {description}
             </p>
           ) : (
-            <div className="h-10" /> // فضای خالی برای محصولاتی که توضیحات ندارند تا قالب به هم نریزد
+            <div className="h-10" />
           )}
         </div>
 

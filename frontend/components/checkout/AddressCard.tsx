@@ -11,7 +11,7 @@ interface AddressCardProps {
   userInfo?: {
     name?: string;
     phone?: string;
-    address?: string; // پشتیبانی از فیلد قدیمی
+    address?: string;
     addresses?: Address[];
   };
   loading?: boolean;
@@ -19,7 +19,6 @@ interface AddressCardProps {
 }
 
 export default function AddressCard({ userInfo, loading, onEdit }: AddressCardProps) {
-  // استخراج اولویت‌دار: اول آدرس جدید (اندیس صفر)، دوم آدرس قدیمی، سوم مقدار پیش‌فرض
   const defaultAddress = userInfo?.addresses?.[0];
   const displayPhone = defaultAddress?.phone ?? userInfo?.phone ?? "---";
   const displayAddress = defaultAddress?.postal_address ?? userInfo?.address ?? "آدرسی ثبت نشده است";

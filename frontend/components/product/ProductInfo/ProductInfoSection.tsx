@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useProduct } from "@/store/hooks/useProduct";
+import { useSelector } from "react-redux";
 import { ProductColor, ProductSize, Product } from "@/types/product";
 
 export default function ProductInfoSection() {
-  const product = useProduct() as Product | null;
+  const product = useSelector((state: any) => state.product?.currentProduct) as Product | null;
 
   if (!product) {
     return (

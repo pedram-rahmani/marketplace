@@ -69,7 +69,7 @@ export default function CancelledOrderDetails({
           </div>
         </div>
 
-        {/* لیست اقلام سفارش */}
+        {/* order items */}
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-white/5">
             <span className="font-bold text-gray-800 dark:text-white text-xs">

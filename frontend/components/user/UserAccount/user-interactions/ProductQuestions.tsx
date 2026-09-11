@@ -33,11 +33,11 @@ export default function ProductQuestions({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
       {(pendingQuestionsCount > 0 || pendingRepliesCount > 0) && (
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="sticky top-48 sm:top-37 z-10 py-2 bg-gray-50/80 dark:bg-dark-900/80 backdrop-blur-md flex items-center gap-3 flex-wrap">
           {pendingQuestionsCount > 0 && (
-            <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-violet-500/10 border border-violet-500/20 rounded-xl text-xs text-violet-600 dark:text-violet-400 font-medium">
+            <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-violet-500/10 border border-violet-500/20 rounded-xl text-xs text-violet-600 dark:text-violet-400 font-medium shadow-sm">
               <span>پرسش‌های در انتظار تایید:</span>
               <span className="px-2 py-0.5 bg-violet-500 text-white rounded-full font-bold text-[10px]">
                 {pendingQuestionsCount}
@@ -46,7 +46,7 @@ export default function ProductQuestions({
           )}
 
           {pendingRepliesCount > 0 && (
-            <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-600 dark:text-blue-400 font-medium">
+            <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-600 dark:text-blue-400 font-medium shadow-sm">
               <span>پاسخ‌های در انتظار تایید:</span>
               <span className="px-2 py-0.5 bg-blue-500 text-white rounded-full font-bold text-[10px]">
                 {pendingRepliesCount}

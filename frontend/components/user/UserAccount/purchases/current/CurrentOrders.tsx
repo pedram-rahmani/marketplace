@@ -10,7 +10,7 @@ interface CurrentOrdersProps {
 export default function CurrentOrders({ orders }: CurrentOrdersProps) {
   if (!orders || orders.length === 0) {
     return (
-      <div className="bg-white dark:bg-[#131b2e] rounded-2xl border border-gray-100 dark:border-white/5 p-16 flex flex-col items-center justify-center text-center space-y-4 shadow-sm dark:shadow-xl">
+      <div>
         <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-inner">
           <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

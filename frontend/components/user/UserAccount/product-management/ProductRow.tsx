@@ -55,7 +55,7 @@ export default function ProductRow({ product, onDelete, onEdit, permissions, cla
         </div>
       </div>
 
-      {/* btns  */}
+      {/* btns */}
       <div className="flex gap-2.5 md:justify-end md:flex-1 items-center">
         <button 
           onClick={() => onEdit(product)} 

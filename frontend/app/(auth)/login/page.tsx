@@ -29,14 +29,11 @@ export default function LoginPage() {
   const [isPending, setIsPending] = useState(false);
   const [result, setResult] = useState<any>(null);
 
-  const [formState, onInputHandler] = useForm(
-    {
-      identifier: { value: "", isValid: false },
-      password: { value: "", isValid: false },
-      rememberMe: { value: false, isValid: true },
-    },
-    false,
-  );
+  const [formState, onInputHandler] = useForm({
+    identifier: { value: "", isValid: false },
+    password: { value: "", isValid: false },
+    rememberMe: { value: false, isValid: true },
+  });
 
   const userLogin = useCallback(
     async (e: React.FormEvent) => {

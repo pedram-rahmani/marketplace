@@ -10,8 +10,8 @@ interface CategoryModalProps {
   title: string;
   children: React.ReactNode;
   formId?: string;
-  submitButtonText?: string; // متن دکمه پایین مودال
-  showFooterButton?: boolean; // آیا دکمه پایین نمایش داده شود یا خیر
+  submitButtonText?: string;
+  showFooterButton?: boolean;
 }
 
 export default function CategoryModal({
@@ -21,7 +21,7 @@ export default function CategoryModal({
   children,
   formId = "category-form",
   submitButtonText = "ذخیره دسته‌بندی",
-  showFooterButton = true, // به صورت پیش‌فرض روشن است تا جاهای دیگر خراب نشوند
+  showFooterButton = true,
 }: CategoryModalProps) {
   const [mounted, setMounted] = useState(false);
 

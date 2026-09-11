@@ -206,7 +206,7 @@ export default function ReviewList({
           return (
             <div key={review.id} className="space-y-3">
               {/* comment text */}
-              <div className="p-5 bg-light/80 dark:bg-dark-700/70 rounded-2xl border border-white/5 space-y-3 relative group">
+              <div className="p-5 bg-white dark:bg-dark-700/70 rounded-2xl border border-custom-gray-100/70 dark:border-dark-600 space-y-3 relative group">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center text-xs font-bold">
@@ -271,7 +271,7 @@ export default function ReviewList({
                   {review.comment}
                 </p>
 
-                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                <div className="flex items-center justify-between pt-3 border-t border-custom-gray-100/40 dark:border-dark-600">
                   <button
                     onClick={() => handleToggleReplyForm(review.id)}
                     className="text-xs text-cyan-400 hover:text-cyan-300 font-medium cursor-pointer transition-colors flex items-center gap-1.5"

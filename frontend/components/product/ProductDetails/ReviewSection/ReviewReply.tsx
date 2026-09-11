@@ -13,7 +13,7 @@ interface ReviewReplyProps {
 
 export default function ReviewReply({ reply }: ReviewReplyProps) {
   return (
-    <div className="p-4 bg-light/80 dark:bg-dark-700/70 rounded-xl border border-white/5 space-y-2">
+    <div className="p-4 bg-white dark:bg-dark-700/70 rounded-xl border border-custom-gray-100/60 dark:border-dark-600 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 flex items-center justify-center text-[10px] font-bold">

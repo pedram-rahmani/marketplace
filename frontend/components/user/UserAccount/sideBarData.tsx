@@ -78,7 +78,6 @@ export const getSideBarItems = (notificationCounts: Record<string, number>): Sid
   {
     link: "/my-account/notifications",
     label: "مدیریت پیام‌ها",
-    permission: "users.view", // در صورت نیاز می‌توانید پرمیشن را تغییر یا حذف کنید
     typeKey: "notifications",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

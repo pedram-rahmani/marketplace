@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axiosInstance";
-import OrderTabs from "@/components/user/UserAccount/purchases/OrderTabs";
 import CurrentOrders from "@/components/user/UserAccount/purchases/current/CurrentOrders";
 import DeliveredOrders from "@/components/user/UserAccount/purchases/delivered/DeliveredOrders";
 import ReturnedOrders from "@/components/user/UserAccount/purchases/returned/ReturnedOrders";
@@ -16,7 +15,7 @@ const tabs = [
 ];
 
 export default function PurchasesContent() {
-  const [activeTab, setActiveTab] = useState("delivered");
+  const [activeTab, setActiveTab] = useState("current");
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -24,12 +23,10 @@ export default function PurchasesContent() {
     async function fetchOrders() {
       setLoading(true);
       try {
-        // استفاده از axiosInstance به جای fetch ساده
         const response = await axiosInstance.get(`/user/orders`, {
           params: { status: activeTab },
         });
 
-        // در آکسیوس داده‌ها به صورت خودکار در response.data قرار دارند
         if (response.data.status === "success") {
           setOrders(response.data.data || []);
         }
@@ -48,12 +45,7 @@ export default function PurchasesContent() {
       case "current":
         return <CurrentOrders orders={orders} />;
       case "delivered":
-        return (
-          <DeliveredOrders 
-            orders={orders} 
-            onViewInvoice={(code) => alert(`مشاهده فاکتور سفارش ${code}`)} 
-          />
-        );
+        return <DeliveredOrders orders={orders} />;
       case "returned":
         return <ReturnedOrders orders={orders} />;
       case "cancelled":
@@ -65,13 +57,43 @@ export default function PurchasesContent() {
 
   return (
     <div className="space-y-6">
-      {/* هدر بخش و تب‌ها */}
-      <div className="bg-white dark:bg-ui-blue-900 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="font-bold text-lg text-text-on-light dark:text-white">تاریخچه سفارشات</h2>
-        <OrderTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      <div className="bg-white dark:bg-ui-blue-900 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <h2 className="font-bold text-lg text-text-on-light dark:text-white shrink-0">
+          تاریخچه سفارشات
+        </h2>
+        {/* tabs container */}
+        <div className="w-full md:w-auto overflow-x-auto pb-1 md:pb-0 no-scrollbar">
+          <div className="flex items-center gap-2 min-w-max">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
+                    isActive
+                      ? "bg-ui-red-600 text-white shadow-lg shadow-rose-500/20"
+                      : "bg-custom-gray-100/40 dark:bg-white/5 hover:bg-dark-600/13 dark:hover:bg-white/10 hover:text-black/70 dark:hover:text-white"
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-md text-[10px] ${
+                      isActive
+                        ? "bg-white/20 text-white"
+                        : "bg-white/5 text-gray-500"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      {/* محتوا بر اساس تب انتخاب شده */}
+      {/* tabs content */}
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500"></div>

@@ -132,7 +132,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-5 bg-white/80 dark:bg-dark-700/70 p-4 sm:p-6 rounded-3xl border border-white/10 shadow-xl backdrop-blur-md mb-10"
+        className="space-y-5 bg-white/80 dark:bg-dark-700/70 p-4 sm:p-6 rounded-3xl border border-custom-gray-100/70 dark:border-dark-600 mb-10"
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
           <span className="text-sm text-text-on-light/70 dark:text-text-on-dark/60 font-medium">
@@ -150,7 +150,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
         <textarea
           {...register("comment", { required: true })}
           placeholder="تجربه خرید یا نظرتان درباره کیفیت، طراحی و عملکرد این محصول را بنویسید..."
-          className="w-full min-h-27.5 resize-y bg-dark-900/10 dark:bg-dark-900/50 border border-custom-gray-200 dark:border-custom-gray-400/20 p-4 rounded-2xl text-sm text-text-on-light dark:text-text-on-dark focus:border-cyan-500 transition-all placeholder:text-text-on-light/50 dark:placeholder:text-text-on-dark/50"
+          className="w-full min-h-27.5 resize-y bg-dark-900/10 dark:bg-dark-900/50 border! border-custom-gray-200! dark:border-custom-gray-400/10! p-4 rounded-2xl text-sm text-text-on-light dark:text-text-on-dark focus:border-cyan-500! transition-all placeholder:text-text-on-light/50 dark:placeholder:text-text-on-dark/50"
         />
 
         <div className="space-y-3">
@@ -200,7 +200,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold w-full sm:w-auto px-6 py-2.5 sm:px-8 sm:py-3 rounded-xl sm:rounded-2xl text-sm sm:text-base transition-all disabled:opacity-50 shadow-lg shadow-cyan-500/10 cursor-pointer"
+            className="bg-cyan-500 hover:bg-cyan-400 text-text-on-dark font-bold w-full sm:w-auto px-6 py-2.5 rounded-xl sm:rounded-2xl text-sx sm:text-sm transition-all disabled:opacity-50 shadow-lg shadow-cyan-500/10 cursor-pointer"
           >
             {isSubmitting ? "در حال ثبت نظر..." : "ثبت دیدگاه"}
           </button>

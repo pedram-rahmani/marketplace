@@ -47,7 +47,7 @@ export default function SecuritySettings() {
 
     if (!currentErr && !newErr && !confirmErr) {
       setSuccessMessage("رمز عبور با موفقیت تغییر کرد.");
-      // اینجا درخواست API برای ارسال اطلاعات قرار می‌گیرد
+      // api request to change password
     } else {
       setSuccessMessage("");
     }

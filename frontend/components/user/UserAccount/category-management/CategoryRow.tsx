@@ -48,7 +48,6 @@ export default function CategoryRow({
       className={`p-4 rounded-xl shadow-sm transition-all duration-300 mt-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 ${getLevelStyle()} ${className}`}
       style={{ marginRight: `${indent}px` }}
     >
-      {/* بخش متن و اطلاعات دسته */}
       <div className="flex justify-between items-start lg:items-center min-w-0 flex-1">
         <div className="flex flex-col gap-1 min-w-0 w-full">
           <div className="flex items-center gap-2 flex-wrap">
@@ -67,7 +66,6 @@ export default function CategoryRow({
         </div>
       </div>
 
-      {/* بخش دکمه‌ها */}
       <div className="grid grid-cols-3 gap-2 w-full lg:w-auto shrink-0">
         <button
           onClick={() => onAddSub(category.id)}

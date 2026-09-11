@@ -1,7 +1,6 @@
 "use client";
 
 import { InteractionItem } from "./UserInteractions";
-
 interface ProductReviewsProps {
   items: InteractionItem[];
   onEdit: (id: number) => void;
@@ -17,7 +16,6 @@ export default function ProductReviews({
   onToggleApproval,
   onToggleMediaApproval,
 }: ProductReviewsProps) {
-
   const pendingCommentsCount = items.filter((item) => item.is_approved === 0).length;
   
   const pendingMediaCount = items.reduce((total, item) => {
@@ -37,11 +35,12 @@ export default function ProductReviews({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
+      {/* counter */}
       {(pendingCommentsCount > 0 || pendingMediaCount > 0) && (
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="sticky top-48 sm:top-37 z-10 py-2 bg-gray-50/80 dark:bg-dark-900/80 backdrop-blur-md flex flex-wrap items-center gap-3">
           {pendingCommentsCount > 0 && (
-            <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-600 dark:text-amber-400 font-medium">
+            <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-600 dark:text-amber-400 font-medium shadow-sm">
               <span>دیدگاه‌های در انتظار تایید:</span>
               <span className="px-2 py-0.5 bg-amber-500 text-white rounded-full font-bold text-[10px]">
                 {pendingCommentsCount}
@@ -50,7 +49,7 @@ export default function ProductReviews({
           )}
 
           {pendingMediaCount > 0 && (
-            <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-xs text-cyan-600 dark:text-cyan-400 font-medium">
+            <div className="flex items-center justify-between gap-4 px-4 py-2.5 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-xs text-cyan-600 dark:text-cyan-400 font-medium shadow-sm">
               <span>فایل‌های ارسالی در انتظار تایید:</span>
               <span className="px-2 py-0.5 bg-cyan-500 text-white rounded-full font-bold text-[10px]">
                 {pendingMediaCount}

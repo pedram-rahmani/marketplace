@@ -51,7 +51,7 @@ export async function getNestedCategories(): Promise<Category[]> {
   return buildCategoryTree(flatCategories);
 }
 
-// اضافه شدن تابع جستجوی دسته بر اساس slug برای استفاده در بردکرامب صفحه سرچ
+// searching category based on "slug" (breadcrumb)
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const categories = await getCategories();
   

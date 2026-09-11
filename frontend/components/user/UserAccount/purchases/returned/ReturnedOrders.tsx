@@ -10,7 +10,7 @@ interface ReturnedOrdersProps {
 export default function ReturnedOrders({ orders }: ReturnedOrdersProps) {
   if (!orders || orders.length === 0) {
     return (
-      <div className="bg-white dark:bg-[#131b2e] rounded-2xl border border-gray-100 dark:border-white/5 p-16 flex flex-col items-center justify-center text-center space-y-4 shadow-sm dark:shadow-xl">
+      <div>
         <div className="w-16 h-16 rounded-full bg-violet-100 dark:bg-violet-500/10 flex items-center justify-center text-violet-600 dark:text-violet-400 shadow-inner">
           <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />

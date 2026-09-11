@@ -15,7 +15,6 @@ export default function MobileCategoriesDrawer({ isOpen, onClose, categories }: 
 
   const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
 
-  // هر بار که دراور باز می‌شود یا لیست دسته‌ها می‌آید، اگر مقداری انتخاب نشده بود، اولین دسته را انتخاب کن
   useEffect(() => {
     if (isOpen && categories.length > 0 && !selectedParentId) {
       setSelectedParentId(categories[0].id);
@@ -44,10 +43,9 @@ export default function MobileCategoriesDrawer({ isOpen, onClose, categories }: 
 
         <div className="flex flex-1 overflow-hidden">
           
-          {/* ستون راست (دسته‌های سطح یک) */}
+          {/* level one */}
           <div className="w-28 bg-gray-50 dark:bg-dark-800 border-l border-gray-100 dark:border-dark-600 overflow-y-auto flex flex-col shrink-0">
             {categories.map((cat) => {
-              // اگر selectedParentId خالی بود، به صورت پیش‌فرض اولین آیتم را فعال در نظر بگیر
               const isSelected = selectedParentId ? cat.id === selectedParentId : cat.id === categories[0]?.id;
               
               return (
@@ -67,7 +65,7 @@ export default function MobileCategoriesDrawer({ isOpen, onClose, categories }: 
             })}
           </div>
 
-          {/* ستون چپ (محتوا و زیرمجموعه‌ها) */}
+          {/* content and sum-menu */}
           <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-dark-700 space-y-6">
             {activeCategory && (
               <Link

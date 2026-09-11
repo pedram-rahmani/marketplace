@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useForm, FormProvider } from "react-hook-form";
 import axiosInstance from "@/lib/axiosInstance";
 
 import BasicInfoTab from "./product-form-parts/BasicInfoTab";
@@ -8,45 +9,34 @@ import OptionsTab from "./product-form-parts/OptionsTab";
 import SpecificationsTab from "./product-form-parts/SpecificationsTab";
 
 export default function ProductForm({ product, categories, onSave }: any) {
-  const [formData, setFormData] = useState({
-    name: "",
-    slug: "",
-    description: "",
-    price: "",
-    discount: "",
-    category_id: "",
+  const methods = useForm({
+    defaultValues: {
+      name: "",
+      slug: "",
+      description: "",
+      price: "",
+      discount: "",
+      category_id: "",
+    },
   });
 
+  const { reset, watch, setValue } = methods;
+  const category_id = watch("category_id");
+
   const [colors, setColors] = useState<{ name: string; hex: string }[]>([]);
-  const [specs, setSpecs] = useState<{ feature_id: string; value: string }[]>(
-    [],
-  );
+  const [specs, setSpecs] = useState<{ feature_id: string; value: string }[]>([]);
   const [editingSpecIndex, setEditingSpecIndex] = useState<number | null>(null);
-  const [allFeatures, setAllFeatures] = useState<
-    { id: number; title: string }[]
-  >([]);
-  const [introBlocks, setIntroBlocks] = useState<
-    { type: string; title: string; content: string; sort_order: number }[]
-  >([]);
+  const [allFeatures, setAllFeatures] = useState<{ id: number; title: string }[]>([]);
+  const [introBlocks, setIntroBlocks] = useState<{ type: string; title: string; content: string; sort_order: number }[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // Options state
-  const [options, setOptions] = useState<{ title: string; items: string[] }[]>(
-    [],
-  );
+  const [options, setOptions] = useState<{ title: string; items: string[] }[]>([]);
   const [newItemText, setNewItemText] = useState<{ [key: number]: string }>({});
 
-  // Warranty states
-  const [allWarranties, setAllWarranties] = useState<
-    { id: number; title: string; duration_months: number }[]
-  >([]);
-  const [selectedWarranties, setSelectedWarranties] = useState<
-    { warranty_id: string; price: string; is_default: boolean }[]
-  >([]);
-  const [editingWarrantyIndex, setEditingWarrantyIndex] = useState<
-    number | null
-  >(null);
+  const [allWarranties, setAllWarranties] = useState<{ id: number; title: string; duration_months: number }[]>([]);
+  const [selectedWarranties, setSelectedWarranties] = useState<{ warranty_id: string; price: string; is_default: boolean }[]>([]);
+  const [editingWarrantyIndex, setEditingWarrantyIndex] = useState<number | null>(null);
 
   const handleNameChange = (val: string) => {
     const newSlug = val
@@ -54,23 +44,16 @@ export default function ProductForm({ product, categories, onSave }: any) {
       .replace(/[^a-zA-Z0-9\u0600-\u06FF\s]/g, "")
       .replace(/\s+/g, "-");
 
-    setFormData((prev) => ({
-      ...prev,
-      name: val,
-      slug: newSlug,
-    }));
+    setValue("name", val);
+    setValue("slug", newSlug);
   };
 
-  // remove warranty from system
   const handleDeleteWarranty = async (warrantyId: number) => {
     if (!confirm("آیا از حذف این گارانتی از سیستم مطمئن هستید؟")) return;
     try {
       await axiosInstance.delete(`/warranties/${warrantyId}`);
       await fetchWarranties();
-
-      setSelectedWarranties(
-        selectedWarranties.filter((w: any) => w.warranty_id !== warrantyId.toString())
-      );
+      setSelectedWarranties(selectedWarranties.filter((w: any) => w.warranty_id !== warrantyId.toString()));
     } catch (error) {
       console.error("خطا در حذف گارانتی:", error);
     }
@@ -98,7 +81,7 @@ export default function ProductForm({ product, categories, onSave }: any) {
 
   useEffect(() => {
     if (product) {
-      setFormData({
+      reset({
         name: product.name || "",
         slug: product.slug || "",
         description: product.description || "",
@@ -107,19 +90,14 @@ export default function ProductForm({ product, categories, onSave }: any) {
         category_id: product.category_id ? product.category_id.toString() : "",
       });
       setColors(product.colors || []);
-      setSpecs(
-        product.specifications?.map((s: any) => ({
-          feature_id: s.feature_id.toString(),
-          value: s.value,
-        })) || [],
-      );
+      setSpecs(product.specifications?.map((s: any) => ({
+        feature_id: s.feature_id.toString(),
+        value: s.value,
+      })) || []);
       setIntroBlocks(product.introductions || []);
 
       if (product.options) {
-        const parsedOptions =
-          typeof product.options === "string"
-            ? JSON.parse(product.options)
-            : product.options;
+        const parsedOptions = typeof product.options === "string" ? JSON.parse(product.options) : product.options;
         setOptions(parsedOptions || []);
       }
 
@@ -129,28 +107,25 @@ export default function ProductForm({ product, categories, onSave }: any) {
             warranty_id: w.id.toString(),
             price: w.pivot?.price ? w.pivot.price.toString() : "",
             is_default: Boolean(w.pivot?.is_default),
-          })),
+          }))
         );
       }
 
       if (product.img) {
-        setPreviewUrl(
-          `${process.env.NEXT_PUBLIC_ASSET_URL}/storage/${product.img}`,
-        );
+        setPreviewUrl(`${process.env.NEXT_PUBLIC_ASSET_URL}/storage/${product.img}`);
       }
     }
-  }, [product]);
+  }, [product, reset]);
 
   useEffect(() => {
-    if (formData.category_id) {
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/categories/${formData.category_id}/features`;
-
+    if (category_id) {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/categories/${category_id}/features`;
       fetch(url)
         .then((res) => res.json())
         .then((data) => setAllFeatures(data.features || []))
         .catch((err) => console.error("Error details:", err));
     }
-  }, [formData.category_id]);
+  }, [category_id]);
 
   const handleSaveNewWarranty = async (index: number, title: string) => {
     if (!title.trim()) {
@@ -163,7 +138,6 @@ export default function ProductForm({ product, categories, onSave }: any) {
         duration_months: 0,
       });
       const newWarranty = data.warranty || data;
-
       await fetchWarranties();
 
       const nw = [...selectedWarranties];
@@ -176,8 +150,7 @@ export default function ProductForm({ product, categories, onSave }: any) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (formData: any) => {
     const data = new FormData();
 
     data.append("name", formData.name);
@@ -193,10 +166,7 @@ export default function ProductForm({ product, categories, onSave }: any) {
 
     const processedSpecs = specs.map((s) => ({
       ...s,
-      feature_id:
-        !isNaN(Number(s.feature_id)) && s.feature_id.trim() !== ""
-          ? Number(s.feature_id)
-          : s.feature_id,
+      feature_id: !isNaN(Number(s.feature_id)) && s.feature_id.trim() !== "" ? Number(s.feature_id) : s.feature_id,
     }));
 
     data.append("specifications", JSON.stringify(processedSpecs));
@@ -208,44 +178,44 @@ export default function ProductForm({ product, categories, onSave }: any) {
   };
 
   return (
-    <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
-      <BasicInfoTab
-        formData={formData}
-        setFormData={setFormData}
-        categories={categories}
-        colors={colors}
-        setColors={setColors}
-        introBlocks={introBlocks}
-        setIntroBlocks={setIntroBlocks}
-        previewUrl={previewUrl}
-        handleImageChange={handleImageChange}
-        handleNameChange={handleNameChange}
-      />
+    <FormProvider {...methods}>
+      <form id="product-form" onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
+        <BasicInfoTab
+          categories={categories}
+          colors={colors}
+          setColors={setColors}
+          introBlocks={introBlocks}
+          setIntroBlocks={setIntroBlocks}
+          previewUrl={previewUrl}
+          handleImageChange={handleImageChange}
+          handleNameChange={handleNameChange}
+        />
 
-      <WarrantiesTab
-        selectedWarranties={selectedWarranties}
-        setSelectedWarranties={setSelectedWarranties}
-        allWarranties={allWarranties}
-        editingWarrantyIndex={editingWarrantyIndex}
-        setEditingWarrantyIndex={setEditingWarrantyIndex}
-        handleSaveNewWarranty={handleSaveNewWarranty}
-        handleDeleteWarranty={handleDeleteWarranty}
-      />
+        <WarrantiesTab
+          selectedWarranties={selectedWarranties}
+          setSelectedWarranties={setSelectedWarranties}
+          allWarranties={allWarranties}
+          editingWarrantyIndex={editingWarrantyIndex}
+          setEditingWarrantyIndex={setEditingWarrantyIndex}
+          handleSaveNewWarranty={handleSaveNewWarranty}
+          handleDeleteWarranty={handleDeleteWarranty}
+        />
 
-      <OptionsTab
-        options={options}
-        setOptions={setOptions}
-        newItemText={newItemText}
-        setNewItemText={setNewItemText}
-      />
+        <OptionsTab
+          options={options}
+          setOptions={setOptions}
+          newItemText={newItemText}
+          setNewItemText={setNewItemText}
+        />
 
-      <SpecificationsTab
-        specs={specs}
-        setSpecs={setSpecs}
-        allFeatures={allFeatures}
-        editingSpecIndex={editingSpecIndex}
-        setEditingSpecIndex={setEditingSpecIndex}
-      />
-    </form>
+        <SpecificationsTab
+          specs={specs}
+          setSpecs={setSpecs}
+          allFeatures={allFeatures}
+          editingSpecIndex={editingSpecIndex}
+          setEditingSpecIndex={setEditingSpecIndex}
+        />
+      </form>
+    </FormProvider>
   );
 }

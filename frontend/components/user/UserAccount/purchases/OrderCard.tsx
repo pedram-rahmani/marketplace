@@ -29,7 +29,7 @@ export default function OrderCard({
 
   return (
     <div className="bg-white dark:bg-[#131b2e] border border-gray-100 dark:border-white/5 rounded-2xl p-6 space-y-4 shadow-sm dark:shadow-xl transition-all">
-      {/* هدر کارت: وضعیت و تاریخ */}
+      {/* cart header */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-white/5 text-xs">
         <div className="flex items-center gap-3">
           <span className={`px-3 py-1 rounded-full font-medium ${statusColor}`}>
@@ -42,7 +42,7 @@ export default function OrderCard({
         </div>
       </div>
 
-      {/* بدنه کارت: لیست اقلام */}
+      {/* cart body */}
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={index} className="flex items-center justify-between gap-4 py-2">
@@ -63,7 +63,7 @@ export default function OrderCard({
         ))}
       </div>
 
-      {/* فوتر کارت: قیمت و دکمه جزئیات */}
+      {/* cart footer */}
       <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-100 dark:border-white/5 text-xs">
         <div className="flex items-center gap-2">
           <span className="text-gray-400">مبلغ کل:</span>

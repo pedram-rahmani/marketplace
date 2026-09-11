@@ -28,7 +28,7 @@ export default function ProductContent({ product }: { product: Product }) {
         )}
 
         {introductions.length > 0 && (
-          <div className="space-y-5 pt-2">
+          <div className="space-y-5 pt-2 mb-2">
             {introductions.map((block: ProductIntroduction) => {
               // headings
               if (block.type === "heading") {

@@ -14,7 +14,7 @@ export default function CouponRow({
   onEdit,
   onDelete,
 }: CouponRowProps) {
-  // تابع کمکی برای تبدیل تاریخ میلادی به شمسی جهت نمایش در جدول
+  // jalali to gregorian conversion
   const formatPersianDate = (dateString: string) => {
     if (!dateString) return "بدون انقضا";
     try {

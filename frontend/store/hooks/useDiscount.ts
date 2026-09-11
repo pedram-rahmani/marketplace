@@ -13,7 +13,7 @@ export default function useDiscount(
 
   const discount = discountValue ?? 0;
 
-  // اگر تخفیف صددرصد بود
+  // if discount =100
   if (isPercent && discount === 100) {
     return {
       finalPrice: "رایگان!",
@@ -22,7 +22,7 @@ export default function useDiscount(
     };
   }
 
-  // محاسبه مبلغ تخفیف بر اساس درصد یا مبلغ ثابت
+  // discount price 
   const calculatedDiscountAmount = isPercent 
     ? price * (discount / 100) 
     : discount;

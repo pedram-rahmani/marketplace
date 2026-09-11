@@ -12,7 +12,7 @@ export default function ProductInfo({ product }: { product: Product }) {
 
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0]);
 
-  // Dynamic state for options (e.g. { "اندازه صفحه": "42mm", "حافظه": "128GB" })
+  // Dynamic state for options ( "اندازه صفحه": "42mm", "حافظه": "128GB" )
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const initialOptions: Record<string, string> = {};
     product?.options?.forEach((opt: ProductOption) => {
@@ -92,7 +92,6 @@ export default function ProductInfo({ product }: { product: Product }) {
           </p>
           <div className="flex flex-wrap gap-2.5 sm:gap-3">
             {product.colors.map((color: any) => {
-              // تشخیص رنگ‌های روشن (مثل سفید) برای اعمال بوردِر محافظ
               const isLightColor = 
                 color.hex?.toLowerCase() === "#ffffff" || 
                 color.hex?.toLowerCase() === "white" || 

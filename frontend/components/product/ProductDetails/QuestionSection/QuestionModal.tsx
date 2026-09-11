@@ -302,8 +302,8 @@ export default function QuestionModal({
                         <div className="space-y-1.5 flex-1 pr-4">
                           <div className="flex items-center gap-2">
                             <span className="w-5 h-5 bg-violet-500/10 text-violet-600 rounded-md flex items-center justify-center text-[10px] font-bold">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75m0 3h.007v.008H12v-.008Z" />
+                              <svg viewBox="0 0 24 24" className="size--3.5!">
+                                <path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75m0 3h.007v.008H12v-.008Z" />
                               </svg>
                             </span>
                             <h5 className="text-xs font-bold text-gray-900 dark:text-white line-clamp-1">

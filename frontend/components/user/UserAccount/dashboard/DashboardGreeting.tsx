@@ -1,6 +1,6 @@
 interface DashboardGreetingProps {
   userName: string;
-  userAvatar?: string; // آدرس عکس کاربر (اختیاری)
+  userAvatar?: string;
 }
 
 export default function DashboardGreeting({
@@ -14,7 +14,6 @@ export default function DashboardGreeting({
       <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-ui-pink/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="flex items-center justify-between relative z-10 gap-4">
-        {/* سمت راست: آواتار و متن سلام */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-linear-to-tr from-primary to-info flex items-center justify-center text-sm sm:text-base font-bold text-white shadow-sm shrink-0">
             {userAvatar ? (

@@ -36,8 +36,7 @@ const Register: React.FC = () => {
       email: { value: "", isValid: false },
       password: { value: "", isValid: false },
       passwordConfirmation: { value: "", isValid: false },
-    },
-    false
+    }
   );
 
   const newUserRegister = async (e: React.FormEvent<HTMLFormElement>) => {

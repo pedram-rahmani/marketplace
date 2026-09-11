@@ -14,16 +14,14 @@ interface CategoryNodeProps {
 }
 
 export default function CategoryAccordionItem({ category, onClose }: CategoryNodeProps) {
-  // مدیریت اینکه آیا زیرمجموعه این دسته باز است یا خیر
   const [showSubMenu, setShowSubMenu] = useState(false);
 
   const hasChildren = category.children && category.children.length > 0;
 
-  // اگر زیرمجموعه دارد، با کلیک روی آن به جای لینک، به عمق بعدی می‌رویم
   if (hasChildren) {
     return (
       <div className="relative">
-        {/* دکمه باز کردن زیرمنو */}
+        {/* menu btn */}
         <button
           onClick={() => setShowSubMenu(true)}
           className="w-full flex items-center justify-between py-3.5 px-4 text-right text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-600/40 transition-colors"
@@ -34,14 +32,14 @@ export default function CategoryAccordionItem({ category, onClose }: CategoryNod
           </svg>
         </button>
 
-        {/* پنل فرزندان که به صورت اسلایدی روی صفحه فعلی می‌آید */}
+        {/* submenu */}
         <div
           className={`absolute inset-0 bg-white dark:bg-dark-700 z-20 flex flex-col transition-transform duration-300 ease-in-out ${
             showSubMenu ? "translate-x-0" : "translate-x-full pointer-events-none"
           }`}
           style={{ direction: "rtl" }}
         >
-          {/* هدر سطح جدید (شبیه دیجی‌کالا: "همه محصولات فلان" + دکمه بازگشت) */}
+          {/* new level header */}
           <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-100 dark:border-dark-600 bg-gray-50/50 dark:bg-dark-700">
             <button
               onClick={() => setShowSubMenu(false)}
@@ -62,9 +60,8 @@ export default function CategoryAccordionItem({ category, onClose }: CategoryNod
             </button>
           </div>
 
-          {/* لیست زیرمجموعه‌ها در این سطح */}
           <div className="flex-1 overflow-y-auto divide-y divide-gray-50 dark:divide-dark-600/30">
-            {/* لینک دسترسی مستقیم به صفحه خود این دسته والد */}
+
             <Link
               href={`/search/category-${category.id}`}
               onClick={onClose}
@@ -82,7 +79,6 @@ export default function CategoryAccordionItem({ category, onClose }: CategoryNod
     );
   }
 
-  // اگر زیرمجموعه ندارد، به عنوان یک لینک نهایی (برگ) عمل می‌کند
   return (
     <Link
       href={`/product-info/${category.id}/${category.name}`}

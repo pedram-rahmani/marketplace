@@ -8,7 +8,7 @@ export default function WarrantiesTab({
   editingWarrantyIndex,
   setEditingWarrantyIndex,
   handleSaveNewWarranty,
-  handleDeleteWarranty, // متد جدید برای حذف گارانتی کلی
+  handleDeleteWarranty,
 }: any) {
   return (
     <div className="border-t border-t-custom-gray-400/40 pt-4">
@@ -27,7 +27,7 @@ export default function WarrantiesTab({
             : []),
         ];
 
-        // پیدا کردن آبجکت کامل گارانتی انتخاب شده برای این ردیف (جهت دسترسی به دکمه حذف کلی یا ویرایش)
+        // find the current warranty object (for removing from database)
         const currentWarrantyObj = allWarranties.find(
           (w: any) => w.id.toString() === item.warranty_id,
         );

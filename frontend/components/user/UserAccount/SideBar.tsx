@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -23,7 +22,8 @@ export default function SideBar({ isOpen, onClose }: SideBarProps) {
   const dispatch = useAppDispatch();
 
   const { user, token } = useAuth();
-  const permissions = user?.permissions || (user as any)?.user?.permissions || [];
+  const permissions =
+    user?.permissions || (user as any)?.user?.permissions || [];
   const userRole = (user as any)?.user?.role || user?.role;
 
   const { notificationCounts, markAsReadByType } = useNotifications();
@@ -45,7 +45,11 @@ export default function SideBar({ isOpen, onClose }: SideBarProps) {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post("/logout", {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axiosInstance.post(
+        "/logout",
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
@@ -59,27 +63,27 @@ export default function SideBar({ isOpen, onClose }: SideBarProps) {
 
   return (
     <>
-      {/* اوورلی بک‌گراند تاریک فقط در موبایل (هنگام باز شدن منو) */}
+      {/* overlay for mobile */}
       {isOpen && (
-        <div 
+        <div
           onClick={onClose}
           className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden transition-opacity"
         />
       )}
 
-      {/* سایدبار: از سایز md (تبلت/آیپد) به بعد به صورت ثابت فیکس می‌شود و نیازی به دکمه همبرگری ندارد */}
-      <aside 
+      <aside
         className={`fixed right-0 bottom-0 top-0 w-67 flex flex-col shrink-0 bg-white dark:bg-ui-blue-900 py-4 z-50 shadow-lg border-l border-gray-100 dark:border-white/5 transition-transform duration-300 ease-in-out md:translate-x-0 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="mx-6 bg-violet-600 text-white rounded-2xl px-4 py-5 shadow-xl shadow-violet-500/20 mb-8 text-center relative">
-          {/* دکمه ضربدر بستن سایدبار فقط در موبایل */}
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="absolute left-3 top-3 text-white/80 hover:text-white md:hidden text-lg"
           >
-            ✕
+            <svg viewBox="0 0 24 24" className="size-5!">
+              <path d="M6 18 18 6M6 6l12 12" />
+            </svg>
           </button>
           <span className="flex items-center justify-center font-bold truncate">
             {(user as any)?.user?.username || user?.username || "کاربر مهمان"}
@@ -95,7 +99,8 @@ export default function SideBar({ isOpen, onClose }: SideBarProps) {
                 key={index}
                 href={item.link}
                 onClick={() => {
-                  if (badgeCount > 0 && item.typeKey) markAsReadByType(item.typeKey);
+                  if (badgeCount > 0 && item.typeKey)
+                    markAsReadByType(item.typeKey);
                   onClose();
                 }}
                 className={`flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 group ${
@@ -105,10 +110,18 @@ export default function SideBar({ isOpen, onClose }: SideBarProps) {
                 }`}
               >
                 <div className="flex items-center gap-x-3 [&_svg]:size-5!">
-                  <span className={isActive(item.link) ? "text-violet-500" : "text-gray-400 group-hover:text-ui-purple/80"}>
+                  <span
+                    className={
+                      isActive(item.link)
+                        ? "text-violet-500"
+                        : "text-gray-400 group-hover:text-ui-purple/80"
+                    }
+                  >
                     {item.icon}
                   </span>
-                  <span className="text-sm group-hover:text-ui-purple">{item.label}</span>
+                  <span className="text-sm group-hover:text-ui-purple">
+                    {item.label}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   {badgeCount > 0 && (
@@ -116,7 +129,9 @@ export default function SideBar({ isOpen, onClose }: SideBarProps) {
                       {badgeCount}
                     </span>
                   )}
-                  {isActive(item.link) && <div className="w-1.5 h-1.5 rounded-full bg-ui-purple"></div>}
+                  {isActive(item.link) && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-ui-purple"></div>
+                  )}
                 </div>
               </Link>
             );

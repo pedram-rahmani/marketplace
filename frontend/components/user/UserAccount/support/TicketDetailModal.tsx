@@ -65,11 +65,9 @@ export default function TicketDetailModal({
           </button>
         </div>
 
-        {/* لیست پیام‌ها (چت) */}
+        {/* chat list */}
         <div className="p-6 overflow-y-auto space-y-4 flex-1">
           {ticket.messages?.map((msg: any, index: number) => {
-            // اگر پیام متعلق به خود کاربر باشد -> سمت راست (items-end)
-            // اگر پیام متعلق به ادمین/پشتیبان باشد -> سمت چپ (items-start)
             const isUserMessage = msg.user_id === ticket.user_id;
 
             return (
@@ -94,7 +92,7 @@ export default function TicketDetailModal({
           })}
         </div>
 
-        {/* فرم ارسال پاسخ */}
+        {/* send message form */}
         <form onSubmit={handleSendReply} className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 flex gap-2">
           <input
             type="text"

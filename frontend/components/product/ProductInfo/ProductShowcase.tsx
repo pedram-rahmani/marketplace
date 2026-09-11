@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useProduct } from "@/store/hooks/useProduct";
+import { useSelector } from "react-redux";
 import ProductGallery from "../ProductDetails/ProductGallery/ProductGallery";
 import { Product } from "@/types/product";
 
 export default function ProductShowcase() {
-  const product = useProduct() as Product | null;
+  const product = useSelector((state: any) => state.product?.currentProduct) as Product | null;
   const [showGallery, setShowGallery] = useState(false);
 
   // disable window scroll

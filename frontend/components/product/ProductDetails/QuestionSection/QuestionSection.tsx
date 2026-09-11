@@ -30,7 +30,7 @@ export default function QuestionSection({ questions: initialQuestions, productId
   };
 
   return (
-    <div className="bg-white/80 dark:bg-dark-700/70 border border-white/5 rounded-3xl p-6 space-y-6">
+    <div className="bg-white/80 dark:bg-dark-700/70 border border-custom-gray-100/70 dark:border-dark-600 rounded-3xl p-6 space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <h2 className="text-base font-bold text-text-on-light/80 dark:text-text-on-dark/90">پرسش و پاسخ کاربران</h2>

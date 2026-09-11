@@ -1,61 +1,63 @@
-"use client"
-import React, { useCallback, useReducer } from "react";
+"use client";
+import { useCallback, useReducer } from "react";
 
-// Reducer to manage form state
-const formReducer = (state, action) => {
+export interface FormInputState {
+  value: any;
+  isValid: boolean;
+}
+
+type FormAction =
+  | { type: "INPUT_CHANGE"; inputID: string; value: any; isValid: boolean }
+  | { type: "SET_DATA"; inputs: { [key: string]: FormInputState }; isFormValid: boolean };
+
+const formReducer = (state: any, action: FormAction) => {
   switch (action.type) {
-    case "INPUT_CHANGE":
+    case "INPUT_CHANGE": {
+      let formIsValid = true;
       const updatedInputs = {
         ...state.inputs,
-        [action.inputID]: {
-          value: action.value,
-          isValid: action.isValid,
-        },
+        [action.inputID]: { value: action.value, isValid: action.isValid },
       };
-
-
-      const isFormValid = Object.values(updatedInputs).every(input => input.isValid);
-
-      return {
-        ...state,
-        inputs: updatedInputs,
-        isFormValid,
-      };
-
-    case "RESET_FORM":
-      return {
-        inputs: action.initialInputs,
-        isFormValid: action.initialFormIsValid,
-      };
-
+      for (const inputId in updatedInputs) {
+        if (!updatedInputs[inputId].isValid) {
+          formIsValid = false;
+          break;
+        }
+      }
+      return { ...state, inputs: updatedInputs, isFormValid: formIsValid };
+    }
+    case "SET_DATA":
+      return { inputs: action.inputs, isFormValid: action.isFormValid };
     default:
       return state;
   }
 };
 
-export default function useForm(initialInputs, initialFormIsValid) {
-  const [formState, dispatch] = useReducer(formReducer, {
-    inputs: initialInputs,
-    isFormValid: initialFormIsValid,
-  });
 
-  const onInputHandler = useCallback((inputID, value, isValid) => {
-    dispatch({
-      type: "INPUT_CHANGE",
-      inputID,
-      value,
-      isValid,
-    });
+export const createFormInputs = (initialValues: { [key: string]: { value: any; isValid?: boolean } }) => {
+  const inputs: { [key: string]: FormInputState } = {};
+  let isAllValid = true;
+
+  for (const key in initialValues) {
+    const item = initialValues[key];
+    const isValid = item.isValid !== undefined ? item.isValid : true;
+    inputs[key] = { value: item.value, isValid };
+    if (!isValid) isAllValid = false;
+  }
+  return { inputs, isFormValid: isAllValid };
+};
+
+export default function useForm(initialValues: { [key: string]: { value: any; isValid?: boolean } }) {
+  const initial = createFormInputs(initialValues);
+  const [formState, dispatch] = useReducer(formReducer, initial);
+
+  const onInputHandler = useCallback((inputID: string, value: any, isValid: boolean = true) => {
+    dispatch({ type: "INPUT_CHANGE", inputID, value, isValid });
   }, []);
 
-  // Optional: reset the form state
-  const resetForm = useCallback(() => {
-    dispatch({
-      type: "RESET_FORM",
-      initialInputs,
-      initialFormIsValid,
-    });
-  }, [initialInputs, initialFormIsValid]);
+  const setFormData = useCallback((newValues: { [key: string]: { value: any; isValid?: boolean } }) => {
+    dispatch({ type: "SET_DATA", ...createFormInputs(newValues) });
+  }, []);
 
-  return [formState, onInputHandler, resetForm];
+  return [formState, onInputHandler, setFormData] as const;
 }
