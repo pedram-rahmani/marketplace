@@ -54,7 +54,8 @@ export default function Footer({ categories = [] }: FooterProps) {
 
   return (
     <>
-      <div className="lg:hidden fixed w-full bottom-0 left-1/2 transform -translate-x-1/2 flex items-center justify-center z-5">
+      {/* تغییر z-index به 30 برای قرارگیری امن زیر مدال */}
+      <div className="lg:hidden fixed w-full bottom-0 left-1/2 transform -translate-x-1/2 flex items-center justify-center z-30">
         <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-t from-dark-700/40 to-transparent dark:from-dark-700 dark:to-transparent pointer-events-none z-0" />
 
         <div className="relative mb-2 w-[92%] sm:w-125 md:w-150 flex items-center justify-center ">

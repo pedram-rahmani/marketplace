@@ -18,32 +18,91 @@ class ProductController extends Controller
     use AuthorizesRequests;
 
     public function index(Request $request)
-    {
-        try {
-            $query = Product::with([
-                'colors',
-                'introductions',
-                'category',
-                'specifications.feature',
-                'warranties'
-            ]);
+{
+    try {
+        $query = Product::with([
+            'colors',
+            'introductions',
+            'category',
+            'specifications.feature',
+            'warranties'
+        ]);
 
-            if ($request->has('category')) {
-                $slug = $request->query('category');
-
-                $query->whereHas('category', function ($q) use ($slug) {
-                    $q->where('slug', $slug)
-                        ->orWhere('name', $slug);
-                });
-            }
-
-            $products = $query->get();
-
-            return response()->json(['products' => $products]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        // Filter active products only unless requested otherwise
+        if (!$request->has('include_inactive')) {
+            $query->where('is_active', true);
         }
+
+        // Category filter
+        if ($request->has('category')) {
+            $slug = $request->query('category');
+            $query->whereHas('category', function ($q) use ($slug) {
+                $q->where('slug', $slug)
+                  ->orWhere('name', $slug);
+            });
+        }
+
+        // Keyword search filter (matches name or brand)
+        if ($request->filled('search')) {
+            $search = $request->query('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('brand', 'like', "%{$search}%");
+            });
+        }
+
+        // Brand filter (supports comma-separated string or array)
+        if ($request->filled('brands')) {
+            $brands = is_array($request->brands) ? $request->brands : explode(',', $request->brands);
+            $query->whereIn('brand', array_map('trim', $brands));
+        }
+
+        // Price range filter
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->query('min_price'));
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->query('max_price'));
+        }
+
+        // In-stock products filter
+        if ($request->boolean('in_stock')) {
+            $query->where('stock', '>', 0);
+        }
+
+        // Discounted products filter
+        if ($request->boolean('has_discount')) {
+            $query->whereNotNull('discount')->where('discount', '>', 0);
+        }
+
+        // Sorting logic
+        $sort = $request->query('sort', 'newest');
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'popular':
+                $query->orderBy('rate', 'desc');
+                break;
+            case 'bestselling':
+                $query->orderBy('sales_count', 'desc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('id', 'desc');
+                break;
+        }
+
+        $products = $query->get();
+
+        return response()->json(['products' => $products]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
 
     public function show($slug)
     {
@@ -79,17 +138,32 @@ class ProductController extends Controller
         $this->authorize('create', Product::class);
         $request->validate([
             'name' => 'required|string|max:255',
+            'brand' => 'nullable|string|max:255',
             'slug' => 'required|string|unique:products,slug',
+            'sku' => 'nullable|string|unique:products,sku',
             'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|integer|min:0',
+            'sales_count' => 'nullable|integer|min:0',
             'category_id' => 'required|exists:categories,id',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'discount_starts_at' => 'nullable|date',
             'discount_expires_at' => 'nullable|date|after_or_equal:discount_starts_at',
+            'is_active' => 'nullable|boolean',
+            'featured' => 'nullable|boolean',
         ]);
 
         return DB::transaction(function () use ($request) {
-            $data = $request->only('name', 'slug', 'price', 'discount', 'discount_starts_at', 'discount_expires_at', 'category_id');
+            $data = $request->only([
+                'name', 'brand', 'slug', 'sku', 'price', 'stock', 'sales_count',
+                'discount', 'discount_starts_at', 'discount_expires_at',
+                'category_id', 'is_active', 'featured'
+            ]);
+
             $data['slug'] = Str::slug($request->name, '-');
+            $data['stock'] = $request->input('stock', 0);
+            $data['sales_count'] = $request->input('sales_count', 0);
+            $data['is_active'] = $request->has('is_active') ? filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN) : true;
+            $data['featured'] = $request->has('featured') ? filter_var($request->featured, FILTER_VALIDATE_BOOLEAN) : false;
 
             if ($request->has('options')) {
                 $data['options'] = is_string($request->options)
@@ -152,16 +226,34 @@ class ProductController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'brand' => 'nullable|string|max:255',
             'slug' => 'required|string|unique:products,slug,' . $id,
+            'sku' => 'nullable|string|unique:products,sku,' . $id,
             'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|integer|min:0',
+            'sales_count' => 'nullable|integer|min:0',
             'category_id' => 'required|exists:categories,id',
             'discount_starts_at' => 'nullable|date',
             'discount_expires_at' => 'nullable|date|after_or_equal:discount_starts_at',
+            'is_active' => 'nullable|boolean',
+            'featured' => 'nullable|boolean',
         ]);
 
         return DB::transaction(function () use ($request, $product) {
-            $updateData = $request->only('name', 'slug', 'price', 'discount', 'discount_starts_at', 'discount_expires_at', 'category_id');
+            $updateData = $request->only([
+                'name', 'brand', 'slug', 'sku', 'price', 'stock', 'sales_count',
+                'discount', 'discount_starts_at', 'discount_expires_at',
+                'category_id', 'is_active', 'featured'
+            ]);
+
             $updateData['slug'] = Str::slug($request->name, '-');
+
+            if ($request->has('is_active')) {
+                $updateData['is_active'] = filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN);
+            }
+            if ($request->has('featured')) {
+                $updateData['featured'] = filter_var($request->featured, FILTER_VALIDATE_BOOLEAN);
+            }
 
             if ($request->has('options')) {
                 $updateData['options'] = is_string($request->options)
@@ -285,7 +377,20 @@ class ProductController extends Controller
     public function getFilters(Request $request)
     {
         $categoryId = $request->query('category_id');
-        $features = ProductFeature::where('category_id', $categoryId)
+
+        $query = Product::query()->where('is_active', true);
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        // brands
+        $brands = (clone $query)->whereNotNull('brand')
+            ->select('brand')
+            ->distinct()
+            ->pluck('brand');
+
+        // features
+        $features = ProductFeature::when($categoryId, fn($q) => $q->where('category_id', $categoryId))
             ->with(['specifications' => fn($q) => $q->select('feature_id', 'value')->distinct()])
             ->get()
             ->map(fn($f) => [
@@ -294,9 +399,14 @@ class ProductController extends Controller
                 'values' => $f->specifications->pluck('value')->unique()->values()
             ]);
 
-        $colors = ProductColor::whereHas('product', fn($q) => $q->where('category_id', $categoryId))
+        // colors
+        $colors = ProductColor::whereHas('product', fn($q) => $q->when($categoryId, fn($p) => $p->where('category_id', $categoryId)))
             ->select('name', 'hex')->distinct()->get();
 
-        return response()->json(['features' => $features, 'colors' => $colors]);
+        return response()->json([
+            'brands' => $brands,
+            'features' => $features,
+            'colors' => $colors
+        ]);
     }
 }

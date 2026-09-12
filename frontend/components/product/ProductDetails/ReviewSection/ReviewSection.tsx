@@ -142,7 +142,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
             name="rating"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <RatingStars rating={value} onChange={onChange} size={5} />
+              <RatingStars rating={value} onChange={onChange} size={20} />
             )}
           />
         </div>

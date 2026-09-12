@@ -17,7 +17,7 @@ interface ProductBoxProps {
 export default function ProductBox({ productInfos }: ProductBoxProps) {
   if (!productInfos) return null;
 
-  const { img, name, description, price, discount, slug } = productInfos;
+  const { img, name, description, price, discount, slug, rate } = productInfos;
 
   const [isLoading, setIsLoading] = useState(true);
   const finalDiscount = discount ?? 0;
@@ -68,7 +68,7 @@ export default function ProductBox({ productInfos }: ProductBoxProps) {
       {/* Product Details */}
       <div className="flex flex-col flex-1 justify-between p-4">
         <div className="space-y-2">
-          {/* عنوان با ارتفاع ثابت دو خط */}
+          {/* title */}
           <h3 className="line-clamp-2 h-12 font-bold text-dark-900 dark:text-white text-sm sm:text-base">
             <Link
               href={`/products/${slug}`}
@@ -88,33 +88,37 @@ export default function ProductBox({ productInfos }: ProductBoxProps) {
         </div>
 
         <div className="mt-4 pt-3 border-t border-custom-gray-300 dark:border-white/10">
+
           <div className="flex items-center justify-end mb-3 text-ui-yellow">
-            <RatingStars rating={4} />
+            <RatingStars rating={Number(rate) || 0} />
           </div>
 
           <div className="flex items-end justify-end">
-            <div className="flex items-center gap-x-3">
-              <div className="flex flex-col items-end">
-                {finalDiscount > 0 && !isFree && (
+            <div className="flex flex-col items-end min-h-11 justify-end">
+              {/* main price (without discount) */}
+              <div className="h-4 flex items-center justify-end">
+                {finalDiscount > 0 && !isFree ? (
                   <span className="text-xs text-gray-400 line-through">
                     {e2f(price)}
                   </span>
-                )}
-                <span
-                  className={`text-lg font-bold ${
-                    isFree
-                      ? "text-red-500 dark:text-red-400 animate-pulse"
-                      : "text-ui-green-700 dark:text-ui-green-400"
-                  }`}
-                >
-                  {finalPrice}
-                  {!isFree && (
-                    <span className="text-[10px] mr-1 font-normal opacity-70">
-                      تومان
-                    </span>
-                  )}
-                </span>
+                ) : null}
               </div>
+
+              {/* final price*/}
+              <span
+                className={`text-lg font-bold ${
+                  isFree
+                    ? "text-red-500 dark:text-red-400 animate-pulse"
+                    : "text-ui-green-700 dark:text-ui-green-400"
+                }`}
+              >
+                {finalPrice}
+                {!isFree && (
+                  <span className="text-[10px] mr-1 font-normal opacity-70">
+                    تومان
+                  </span>
+                )}
+              </span>
             </div>
           </div>
         </div>

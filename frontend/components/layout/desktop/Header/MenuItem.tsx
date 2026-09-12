@@ -8,7 +8,7 @@ interface MenuItemProps {
   item: Category;
   onHover?: () => void;
   onClick?: () => void;
-  onCloseMenu?: () => void; // دریافت تابع بستن منو از والد
+  onCloseMenu?: () => void;
   isActive: boolean;
   isLastLevel: boolean;
   menuItems: Category[];
@@ -88,7 +88,6 @@ const MenuItem = ({
             <div onClick={handleTextClick}>
               <ArrowIcon isActive={isActive} />
             </div>
-            {/* آیکون لینک کوچک - با کلیک منو بسته می‌شود */}
             <Link
               href={href}
               onClick={() => {
@@ -110,7 +109,6 @@ const MenuItem = ({
           </div>
         </div>
       ) : (
-        /* لینک معمولی سطح آخر یا دسکتاپ - با کلیک منو بسته می‌شود */
         <Link
           href={href}
           onClick={() => {

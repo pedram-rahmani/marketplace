@@ -92,6 +92,10 @@ export default function UserManagementContent() {
     try {
       const { permissions, ...userData } = updatedData;
 
+      if (userData.phone !== undefined) {
+        userData.phone = userData.phone?.trim() ? userData.phone : editingUser?.phone || "00000000000";
+      }
+
       await axiosInstance.put(`/users/${editingUser.id}`, userData);
 
       if (permissions) {
@@ -103,9 +107,11 @@ export default function UserManagementContent() {
       setEditingUser(null);
       fetchUsers();
       showPopup("تغییرات با موفقیت ذخیره شد", "success");
-    } catch (error) {
-      console.error("خطا در بروزرسانی:", error);
-      showPopup("خطا در ذخیره‌سازی اطلاعات", "error");
+    } catch (error: any) {
+      // این بخش را تغییر دهید تا خطای دقیق سرور را چاپ کند
+      console.error("Server Error Details:", error?.response?.data);
+      const serverMessage = error?.response?.data?.message || error?.response?.data?.error || "خطا در ذخیره‌سازی اطلاعات";
+      showPopup(serverMessage, "error");
     }
   };
 

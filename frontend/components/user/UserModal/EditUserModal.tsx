@@ -22,10 +22,15 @@ export function EditUserModal({
 }: EditUserModalProps) {
   const { canManagePermissions } = usePermissions();
   const [activeTab, setActiveTab] = useState<"info" | "permissions">("info");
+  
+  // استخراج آدرس فعلی کاربر (اگر رابطه آدرس‌ها آرایه باشد، اولین مورد یا آدرس پیش‌فرض را می‌گیرد)
+  const existingAddress = user?.postal_address || (user as any)?.addresses?.[0]?.postal_address || "";
+
   const [formData, setFormData] = useState({
     name: user?.name || "",
     username: user?.username || "",
     phone: user?.phone || "",
+    postal_address: existingAddress,
     status: user?.status || "active",
     admin_notes: user?.admin_notes || "",
     permissions: user?.permissions || [],
@@ -53,7 +58,8 @@ export function EditUserModal({
         : {
             name: formData.name,
             username: formData.username,
-            phone: formData.phone,
+            phone: formData.phone?.trim() ? formData.phone : user?.phone || "00000000000",
+            postal_address: formData.postal_address,
             status: formData.status,
             admin_notes: formData.admin_notes,
           };
@@ -120,6 +126,16 @@ export function EditUserModal({
               }
               className="input-info w-full"
               placeholder="شماره تماس"
+            />
+            
+            {/* نمایش و ویرایش آدرس پستی در Textarea */}
+            <textarea
+              value={formData.postal_address}
+              onChange={(e) =>
+                setFormData({ ...formData, postal_address: e.target.value })
+              }
+              className="input-info w-full resize-none h-20 text-xs p-2"
+              placeholder="آدرس پستی"
             />
 
             <Select

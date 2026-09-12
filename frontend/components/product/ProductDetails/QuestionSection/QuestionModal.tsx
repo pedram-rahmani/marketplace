@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/lib/axiosInstance";
 import useLockBodyScroll from "@/store/hooks/useLockBodyScroll";
+import useClickOutside from "@/store/hooks/useClickOutside";
 import SimplePopup from "@/components/feedback/MessageModal/SimplePopup";
 
 interface QuestionModalProps {
@@ -40,6 +41,19 @@ export default function QuestionModal({
     type: "success",
   });
 
+  const handleSafeClose = () => {
+    setPopup((prev) => ({ ...prev, isOpen: false }));
+    onClose();
+  };
+
+  const modalContentRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(() => {
+    if (!popup.isOpen) {
+      handleSafeClose();
+    }
+  }, modalContentRef);
+
   useLockBodyScroll(isOpen);
 
   useEffect(() => {
@@ -55,11 +69,6 @@ export default function QuestionModal({
 
   if (!isOpen) return null;
 
-  const handleSafeClose = () => {
-    setPopup((prev) => ({ ...prev, isOpen: false }));
-    onClose();
-  };
-
   // new question submission
   const handleSubmitQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,10 +80,10 @@ export default function QuestionModal({
         product_id: productId,
         body: newQuestionText,
       });
-      
+
       setNewQuestionText("");
       onQuestionAdded();
-      
+
       setPopup({
         isOpen: true,
         message: "سوال شما با موفقیت ثبت شد و پس از تایید نمایش داده می‌شود.",
@@ -84,12 +93,13 @@ export default function QuestionModal({
       setTimeout(() => {
         handleSafeClose();
       }, 1500);
-
     } catch (error: any) {
       console.error("Failed to submit question", error);
       setPopup({
         isOpen: true,
-        message: error.response?.data?.message || "خطایی در ثبت سوال رخ داد. لطفاً دوباره تلاش کنید.",
+        message:
+          error.response?.data?.message ||
+          "خطایی در ثبت سوال رخ داد. لطفاً دوباره تلاش کنید.",
         type: "error",
       });
     } finally {
@@ -142,7 +152,10 @@ export default function QuestionModal({
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="bg-white dark:bg-dark-800 w-full max-w-2xl rounded-3xl border border-gray-100 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+        <div
+          ref={modalContentRef}
+          className="bg-white dark:bg-dark-800 w-full max-w-2xl rounded-3xl border border-gray-100 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+        >
           {/* Modal Header */}
           <div className="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white">
@@ -150,13 +163,16 @@ export default function QuestionModal({
                 ? "جزئیات سوال و پاسخ‌ها"
                 : "پرسش و پاسخ کاربران"}
             </h3>
-            {/* 👇 دکمه ضربدر برای بستن کامل مدال در هر حالتی */}
             <button
               onClick={handleSafeClose}
               className="w-8 h-8 rounded-full bg-gray-100 dark:bg-dark-700 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white transition"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              <svg viewBox="0 0 24 24" className="size-5!">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18 18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -169,15 +185,22 @@ export default function QuestionModal({
                   onClick={() => setSelectedQuestion(null)}
                   className="text-xs text-violet-600 dark:text-violet-400 font-medium hover:underline flex items-center gap-1"
                 >
-                  ← بازگشت به همه سوالات
+                  <svg viewBox="0 0 24 24" className="size-4!">
+                    <path d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+                  </svg>
+                  بازگشت به همه سوالات
                 </button>
 
-                {/* نمایش متن سوال */}
+                {/* question body */}
                 <div className="bg-gray-50 dark:bg-dark-700/50 p-4 rounded-2xl border border-gray-100 dark:border-white/5 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold text-gray-900 dark:text-white">
                     <span className="w-6 h-6 bg-violet-500/10 text-violet-600 dark:text-violet-400 rounded-lg flex items-center justify-center text-xs">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75m0 3h.007v.008H12v-.008Z" />
+                      <svg viewBox="0 0 24 24" className="size-4!">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75m0 3h.007v.008H12v-.008Z"
+                        />
                       </svg>
                     </span>
                     {selectedQuestion.body}
@@ -302,7 +325,7 @@ export default function QuestionModal({
                         <div className="space-y-1.5 flex-1 pr-4">
                           <div className="flex items-center gap-2">
                             <span className="w-5 h-5 bg-violet-500/10 text-violet-600 rounded-md flex items-center justify-center text-[10px] font-bold">
-                              <svg viewBox="0 0 24 24" className="size--3.5!">
+                              <svg viewBox="0 0 24 24" className="size-3.5!">
                                 <path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75m0 3h.007v.008H12v-.008Z" />
                               </svg>
                             </span>
@@ -319,9 +342,12 @@ export default function QuestionModal({
                               : ""}
                           </span>
                         </div>
-                        <span className="text-xs text-violet-600 dark:text-violet-400 font-medium">
-                          مشاهده پاسخ‌ها ←
-                        </span>
+                        <button className="flex items-center justify-center text-xs text-violet-600 dark:text-violet-400 font-medium hover:underline">
+                          مشاهده پاسخ‌ها{" "}
+                          <svg viewBox="0 0 24 24" className="size-4! mr-1">
+                            <path d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                          </svg>
+                        </button>
                       </div>
                     ))
                   )}

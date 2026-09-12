@@ -54,8 +54,7 @@ export default function OptionsTab({
   return (
     <div className="border-t border-t-custom-gray-400/40 pt-4">
       <label className="text-sm font-bold block mb-2">
-        ویژگی‌های انتخابی (سایز، حافظه و...)
-      </label>
+گزینه‌های قابل انتخاب (مثل سایز و رنگ که روی قیمت یا موجودی تاثیر دارند)      </label>
       <div className="space-y-3">
         {options.map((opt: any, groupIdx: number) => (
           <div

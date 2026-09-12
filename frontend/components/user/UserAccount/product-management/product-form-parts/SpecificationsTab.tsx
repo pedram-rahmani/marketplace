@@ -19,10 +19,6 @@ export default function SpecificationsTab({
             value: f.id.toString(),
             label: f.title,
           })),
-          ...(s.feature_id !== "" &&
-          !allFeatures.find((f: any) => f.id.toString() === s.feature_id)
-            ? [{ value: s.feature_id, label: s.feature_id }]
-            : []),
         ];
 
         return (
@@ -32,10 +28,16 @@ export default function SpecificationsTab({
                 className="input-info w-44! border-violet-500 ring-2 ring-violet-500/20"
                 autoFocus
                 placeholder="نام ویژگی..."
-                value={s.feature_id === "custom_input" ? "" : s.feature_id}
+                value={s.name || ""}
                 onChange={(e) => {
+                  const val = e.target.value;
                   const ns = [...specs];
-                  ns[i].feature_id = e.target.value;
+                  ns[i].name = val;
+                  // generate name (like slug)
+                  ns[i].feature_id = val
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]/g, "_")
+                    .replace(/_+/g, "_");
                   setSpecs(ns);
                 }}
                 onBlur={() => setEditingSpecIndex(null)}
@@ -48,9 +50,17 @@ export default function SpecificationsTab({
                 onChange={(v: string) => {
                   if (v === "custom") {
                     setEditingSpecIndex(i);
+                    const ns = [...specs];
+                    ns[i].feature_id = "";
+                    ns[i].name = "";
+                    setSpecs(ns);
                   } else {
+                    const selectedFeature = allFeatures.find((f: any) => f.id.toString() === v);
                     const ns = [...specs];
                     ns[i].feature_id = v;
+                    ns[i].name = selectedFeature 
+                      ? (selectedFeature.name || selectedFeature.title) 
+                      : "";
                     setSpecs(ns);
                   }
                 }}
@@ -84,7 +94,7 @@ export default function SpecificationsTab({
       <button
         type="button"
         className="flex items-center text-xs text-ui-blue-400"
-        onClick={() => setSpecs([...specs, { feature_id: "", value: "" }])}
+        onClick={() => setSpecs([...specs, { feature_id: "", name: "", value: "" }])}
       >
         + افزودن ویژگی
       </button>

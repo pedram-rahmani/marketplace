@@ -36,13 +36,11 @@ export default function ProductInfo({ product }: { product: Product }) {
   const warrantyPrice = Number(selectedWarranty?.pivot?.price || 0);
   const totalPrice = basePrice + warrantyPrice;
 
-  // بررسی اینکه آیا این محصول دقیقاً با همین مشخصات در سبد خرید هست یا خیر
   const existingCartItem = cartItems.find((item: any) => {
     const isSameProduct = item.product.id === product.id;
     const isSameColor = item.color?.id === selectedColor?.id;
     const isSameWarranty = item.warranty?.id === selectedWarranty?.id;
     
-    // مقایسه آپشن‌ها (مثل سایز یا حافظه)
     const isSameOptions = JSON.stringify(item.options) === JSON.stringify(selectedOptions);
 
     return isSameProduct && isSameColor && isSameWarranty && isSameOptions;
@@ -72,7 +70,7 @@ export default function ProductInfo({ product }: { product: Product }) {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4 sm:p-8 bg-white/85 dark:bg-dark-700/70 rounded-3xl border border-white/10 shadow-md w-full max-w-full overflow-hidden box-border">
+    <div className="flex flex-col gap-6 p-4 sm:p-8 bg-white/85 dark:bg-dark-700/70 rounded-3xl border border-custom-gray-100/70 dark:border-dark-600 shadow-sm w-full max-w-full overflow-hidden box-border">
       {/* Product Title */}
       <h1 className="text-xl sm:text-2xl font-bold text-text-on-light/80 dark:text-text-on-dark/90 tracking-tighter leading-relaxed">
         {product?.name}
@@ -86,7 +84,7 @@ export default function ProductInfo({ product }: { product: Product }) {
 
       {/* Colors */}
       {product?.colors && product.colors.length > 0 && (
-        <div className="py-4 border-y border-white/5">
+        <div className="py-4 border-y border-custom-gray-100/70 dark:border-dark-600">
           <p className="text-gray-400 mb-3 text-xs uppercase tracking-widest">
             رنگ: {selectedColor?.name}
           </p>
@@ -150,7 +148,7 @@ export default function ProductInfo({ product }: { product: Product }) {
                       className={`px-4 sm:px-6 py-2 rounded-xl border transition-all text-xs sm:text-sm font-semibold shrink-0 ${
                         isSelected
                           ? "bg-white/10 border-cyan-500 text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.2)]"
-                          : "bg-white/5 border-transparent text-gray-400 hover:bg-white/10"
+                          : "bg-custom-gray-300/20 dark:bg-dark-600 border-transparent text-gray-400 hover:bg-dark-600/10 dark:hover:bg-white/10"
                       }`}
                     >
                       {item}

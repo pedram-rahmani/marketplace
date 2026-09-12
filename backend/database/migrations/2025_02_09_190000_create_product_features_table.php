@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('product_features', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained()->onDelete('cascade')->comment('آیدی دسته‌بندی');
-            $table->string('title')->comment('عنوان اصلی ویژگی');
+            $table->string('title')->comment('عنوان اصلی ویژگی به فارسی (مثلا: حافظه رم)');
+            $table->string('name')->nullable()->comment('نام لاتین برای فیلتر در URL (مثلا: ram)');
             $table->timestamps();
         });
     }

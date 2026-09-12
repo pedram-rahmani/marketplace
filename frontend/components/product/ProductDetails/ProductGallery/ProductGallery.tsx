@@ -109,11 +109,11 @@ export default function ProductGallery({
   };
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-full overflow-hidden">
+    <div className="flex flex-col gap-3 w-full max-w-full rounded-2xl overflow-hidden">
       {/* main media display */}
       <div
         onClick={() => openLightbox(0)}
-        className="relative aspect-video max-h-64 sm:max-h-80 w-full overflow-hidden rounded-2xl bg-gray-900/85 border border-white/10 p-2.5 shadow-lg flex items-center justify-center cursor-pointer group mx-auto"
+        className="relative aspect-video max-h-64 sm:max-h-80 w-full overflow-hidden rounded-2xl bg-gray-900/85 border border-custom-gray-100/70 dark:border-dark-600 p-2.5 shadow-lg flex items-center justify-center cursor-pointer group mx-auto"
       >
         {activeMainMedia ? (
           renderMediaContent(activeMainMedia, false)

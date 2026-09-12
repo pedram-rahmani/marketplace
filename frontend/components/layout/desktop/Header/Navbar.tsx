@@ -24,7 +24,6 @@ export default function Navbar({ menuItems }: NavbarProps) {
 
   useLockBodyScroll(showMenu);
 
-  // تشخیص واقعی دستگاه‌های دارای ماوس از تبلت‌ها و موبایل‌ها
   useEffect(() => {
     const mediaQuery = window.matchMedia("(hover: hover)");
     setIsTouchDevice(!mediaQuery.matches);
@@ -35,7 +34,6 @@ export default function Navbar({ menuItems }: NavbarProps) {
   }, []);
 
   const handleMouseEnter = useCallback(() => {
-    // فقط در صورتی که دستگاه ماوس داشته باشد هاور عمل کند
     if (!isTouchDevice) {
       setShowMenu(true);
     }

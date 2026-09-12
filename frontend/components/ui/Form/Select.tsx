@@ -48,7 +48,11 @@ export default function Select({
   const filteredOptions =
     variant === "advanced"
       ? options.filter((opt) => {
-          const searchSource = (opt.searchKeys || opt.label || "").toLowerCase();
+          const searchSource = (
+            opt.searchKeys ||
+            opt.label ||
+            ""
+          ).toLowerCase();
           return searchSource.includes(search.toLowerCase());
         })
       : options;
@@ -81,14 +85,7 @@ export default function Select({
           viewBox="0 0 24 24"
           className={`size-4! m-1 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
         >
-          <path
-            d="m19.5 8.25-7.5 7.5-7.5-7.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          <path d="m19.5 8.25-7.5 7.5-7.5-7.5" />
         </svg>
       </div>
 
@@ -121,8 +118,18 @@ export default function Select({
                 >
                   {option.label}
                   {isSelected && (
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                    >
+                      <path
+                        d="M5 13l4 4L19 7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   )}
                 </div>

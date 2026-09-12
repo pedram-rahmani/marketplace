@@ -109,18 +109,15 @@ export default async function Page({ params }: PageProps) {
         ]}
       />
 
-      {/* اصلاح اندازه دکوریشن پس‌زمینه برای جلوگیری از بیرون‌زدگی */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
-      {/* تنظیم گرید به 12 ستون استاندارد و هماهنگ کردن spanها */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 mt-6 items-start w-full min-w-0">
-        {/* ستون اول: گالری (6 ستون) */}
         <div className="lg:col-span-6 space-y-4 w-full min-w-0 overflow-hidden">
           <div className="w-full overflow-hidden">
             <ProductGallery mediaItems={allMediaItems} />
           </div>
 
-          <div className="grid grid-cols-3 gap-2 md:gap-3 bg-white/80 dark:bg-dark-700/70 border border-white/5 rounded-2xl p-3 md:p-4 text-center text-[11px] md:text-xs text-text-on-light/80 dark:text-text-on-dark/90">
+          <div className="grid grid-cols-3 gap-2 md:gap-3 bg-white/80 dark:bg-dark-700/70 border border-custom-gray-100/70 dark:border-dark-600 rounded-2xl p-3 md:p-4 text-center text-[11px] md:text-xs text-text-on-light/80 dark:text-text-on-dark/90">
             <div className="flex flex-col items-center gap-1.5 min-w-0">
               <span className="w-8 h-8 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center shrink-0">
                 <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

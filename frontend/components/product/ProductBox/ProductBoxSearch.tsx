@@ -13,7 +13,6 @@ interface ProductBoxSearchProps {
 export default function ProductBoxSearch({
   productInfos,
 }: ProductBoxSearchProps) {
-
   const { img, name, price, discount, slug, description } = productInfos;
 
   const finalDiscount = discount ?? 0;
@@ -81,13 +80,7 @@ export default function ProductBoxSearch({
           </div>
 
           <button className="bg-teal-500/20 hover:bg-teal-500 text-teal-500 hover:text-white p-2.5 rounded-xl transition-all shadow-lg shadow-teal-500/10">
-            <svg
-              className="size-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
+            <svg className="size-5!" viewBox="0 0 24 24">
               <path d="M12 5v14M5 12h14" />
             </svg>
           </button>

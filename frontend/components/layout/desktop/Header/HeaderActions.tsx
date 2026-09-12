@@ -8,13 +8,17 @@ import useClickOutside from "@/store/hooks/useClickOutside";
 import useTheme from "@/store/hooks/useTheme";
 import BasketModal from "@/components/cart/BasketModal/BasketModal";
 import UserModal from "@/components/user/UserModal/UserModal";
+import SearchInput from "@/components/ui/SearchInput/SearchInput";
 import Link from "next/link";
+import { getProducts } from "@/services/product";
+
+const ASSET_URL = process.env.NEXT_PUBLIC_ASSET_URL || "http://127.0.0.1:8000";
 
 export default function HeaderActions() {
   const userInfo = useSelector((state: RootState) => state.auth.user);
   const isLoggedIn = useSelector((state: RootState) => !!state.auth.user);
 
-  const [theme, toggleTheme] = useTheme(); 
+  const [theme, toggleTheme] = useTheme();
   const [showBasket, setShowBasket] = useState<boolean>(false);
   const [showProfile, setShowProfile] = useState<boolean>(false);
 
@@ -27,23 +31,25 @@ export default function HeaderActions() {
   return (
     <div className="flex items-center gap-x-3 md:gap-x-4 shrink-0">
       {/* Search Box */}
-      <div className="relative group hidden xl:block dark:border-dark-800 rounded-3xl border border-custom-gray-300 bg-custom-gray-100/60 dark:bg-dark-600/50">
-        <form className="block" action="" method="get">
-          <input
-            className="text-text-on-light dark:text-text-on-dark text-sm rounded-full pr-4! pl-12! w-64 3xl:w-80 h-full py-2! tracking-tight"
-            type="text"
-            placeholder="به دنبال چه میگردی؟"
-          />
-          <button
-            className="absolute left-4 top-0 bottom-0 w-6 h-6 my-auto text-text-on-light dark:text-text-on-dark"
-            type="submit"
-            role="button"
-          >
-            <svg viewBox="0 0 24 24" className="size-5!">
-              <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-          </button>
-        </form>
+      <div className="hidden xl:block w-64 3xl:w-80">
+        <SearchInput
+          placeholder="به دنبال چه میگردی؟"
+          showImage={true}
+          filterKey="name"
+          redirectUrl="/search"
+          searchParamName="search"
+          getItemLink={(item: any) => `/products/${item.slug || item.id}`}
+          fetcher={async (query) => {
+            const products = await getProducts({ search: query });
+            return products.map((product) => {
+              let imageUrl = product.img;
+              if (imageUrl && !imageUrl.startsWith("http")) {
+                imageUrl = `${ASSET_URL}/storage/${imageUrl.replace(/^\/?storage\//, "")}`;
+              }
+              return { ...product, img: imageUrl };
+            });
+          }}
+        />
       </div>
       
       {/* Toggle Theme Button */}

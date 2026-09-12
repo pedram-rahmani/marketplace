@@ -1,9 +1,22 @@
 "use client";
 import Select from "@/components/ui/Form/Select";
 
+interface BasicInfoTabProps {
+  formState: any;
+  onInputHandler: (id: string, value: any, isValid?: boolean) => void;
+  categories: any[];
+  colors: any[];
+  setColors: (colors: any[]) => void;
+  introBlocks: any[];
+  setIntroBlocks: (blocks: any[]) => void;
+  previewUrl: string | null;
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleNameChange: (name: string) => void;
+}
+
 export default function BasicInfoTab({
-  formData,
-  setFormData,
+  formState,
+  onInputHandler,
   categories,
   colors,
   setColors,
@@ -12,7 +25,10 @@ export default function BasicInfoTab({
   previewUrl,
   handleImageChange,
   handleNameChange,
-}: any) {
+}: BasicInfoTabProps) {
+  // دسترسی امن به مقادیر فیلدها از دل inputs
+  const getValue = (key: string) => formState?.inputs?.[key]?.value ?? "";
+
   const updateBlock = (i: number, f: string, v: string) => {
     const n = [...introBlocks];
     (n[i] as any)[f] = v;
@@ -56,8 +72,11 @@ export default function BasicInfoTab({
         <input
           placeholder="نام محصول"
           className="input-info min-w-full text-base font-bold"
-          value={formData.name}
-          onChange={(e) => handleNameChange(e.target.value)}
+          value={getValue("name")}
+          onChange={(e) => {
+            onInputHandler("name", e.target.value, true);
+            handleNameChange(e.target.value);
+          }}
         />
 
         <div className="relative w-full">
@@ -70,7 +89,7 @@ export default function BasicInfoTab({
             placeholder="product-name-example"
             className="input-info min-w-full text-left font-mono text-xs pl-4 pr-20 py-3 border-dashed border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-dark-900 cursor-default opacity-80"
             dir="ltr"
-            value={formData.slug}
+            value={getValue("slug")}
             readOnly
           />
         </div>
@@ -87,10 +106,8 @@ export default function BasicInfoTab({
               value: c.id.toString(),
               label: c.name,
             }))}
-            value={formData.category_id}
-            onChange={(v: string) =>
-              setFormData({ ...formData, category_id: v })
-            }
+            value={getValue("category_id")}
+            onChange={(v: string) => onInputHandler("category_id", v, true)}
           />
         </div>
 
@@ -103,10 +120,8 @@ export default function BasicInfoTab({
             <input
               placeholder="مثال: 50000"
               className="input-info"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData({ ...formData, price: e.target.value })
-              }
+              value={getValue("price")}
+              onChange={(e) => onInputHandler("price", e.target.value, true)}
             />
           </div>
 
@@ -117,10 +132,8 @@ export default function BasicInfoTab({
             <input
               placeholder="مثال: 10"
               className="input-info"
-              value={formData.discount}
-              onChange={(e) =>
-                setFormData({ ...formData, discount: e.target.value })
-              }
+              value={getValue("discount")}
+              onChange={(e) => onInputHandler("discount", e.target.value, true)}
             />
           </div>
         </div>
@@ -184,10 +197,8 @@ export default function BasicInfoTab({
         <textarea
           className="input-info w-full text-xs"
           placeholder="یک توضیح کوتاه برای نمایش در لیست محصولات..."
-          value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
+          value={getValue("description")}
+          onChange={(e) => onInputHandler("description", e.target.value, true)}
         />
       </div>
 
