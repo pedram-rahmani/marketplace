@@ -9,6 +9,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Hash;
+
 class UserController extends Controller
 {
     use AuthorizesRequests;
@@ -220,6 +222,39 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Profile updated successfully',
             'user' => $user->fresh()->load('addresses')
+        ]);
+    }
+
+
+    public function updatePassword(Request $request)
+    {
+        /** @var \App\Models\User\User $user */
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'max:16', 'confirmed'],
+        ]);
+
+        // new pass validation
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json([
+                'error_code' => 'WRONG_CURRENT_PASSWORD',
+                'message' => 'رمز عبور فعلی اشتباه است.'
+            ], 422);
+        }
+
+        // update new pass
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return response()->json([
+            'message' => 'رمز عبور با موفقیت تغییر کرد.'
         ]);
     }
 }

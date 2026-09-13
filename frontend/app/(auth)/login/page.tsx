@@ -54,11 +54,20 @@ export default function LoginPage() {
         setResult({ status: 201 });
 
         dispatch(setUser({ user, token }));
-        localStorage.setItem("token", token);
-        localStorage.setItem("user_role", user.role);
-        localStorage.setItem("user_id", user.id.toString());
+
+        // انتخاب محل ذخیره‌سازی بر اساس وضعیت تیک "مرا به خاطر بسپار"
+        const storage = rememberMe.value ? localStorage : sessionStorage;
+
+        // پاک کردن فضای ذخیره‌سازی دیگر برای جلوگیری از تداخل
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
+
+        // ذخیره اطلاعات در فضای انتخاب شده
+        storage.setItem("token", token);
+        storage.setItem("user_role", user.role);
+        storage.setItem("user_id", user.id.toString());
+
       } catch (err: any) {
-        // show the error message in message modal
         setResult(
           err.response?.data || { status: err.response?.status || 500 },
         );

@@ -66,6 +66,17 @@ const MessageModal: React.FC<MessageModalProps> = ({
   }, [isOpen, onAfterClose, isSuccess]);
 
   const getErrorMessage = useCallback((): string => {
+    // message
+    if (
+      typeof response === "object" &&
+      response !== null &&
+      "message" in response &&
+      response.message
+    ) {
+      return response.message as string;
+    }
+
+    // failed (Validation Errors)
     if (typeof response === "object" && response !== null && response.errors) {
       const firstField = Object.keys(response.errors)[0];
       const rawMessage = response.errors[firstField][0];
@@ -76,6 +87,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
       return matchedKey ? ERROR_MAPPINGS[matchedKey] : rawMessage;
     }
 
+    // failed (error code)
     if (
       typeof response === "object" &&
       response !== null &&
@@ -88,10 +100,14 @@ const MessageModal: React.FC<MessageModalProps> = ({
       );
     }
 
+    // success
     if (isSuccess) {
-      return "اطلاعات حساب کاربری با موفقیت ویرایش شد.";
+      return (
+        ERROR_MAPPINGS[statusCode.toString()] || "عملیات با موفقیت انجام شد."
+      );
     }
 
+    // default (for server errors)
     return (
       (statusCode
         ? ERROR_MAPPINGS[statusCode.toString()]
@@ -109,11 +125,15 @@ const MessageModal: React.FC<MessageModalProps> = ({
       onClick={onClose}
     >
       <div
-        className={`relative max-w-sm w-full bg-white rounded-xl shadow-2xl p-6 border-r-8 overflow-hidden transition-all ${isSuccess ? "border-green-600 text-green-900" : "border-red-600 text-red-900"}`}
+        className={`relative max-w-sm w-full bg-white rounded-xl shadow-2xl p-6 border-r-8 overflow-hidden transition-all ${
+          isSuccess ? "border-green-600 text-green-900" : "border-red-600 text-red-900"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div
-          className={`absolute top-0 left-0 h-1.5 ${isSuccess ? "bg-green-600" : "bg-red-600"}`}
+          className={`absolute top-0 left-0 h-1.5 ${
+            isSuccess ? "bg-green-600" : "bg-red-600"
+          }`}
           style={{ width: `${width}%` }}
         />
         <div className="flex items-start gap-4">

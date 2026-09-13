@@ -41,7 +41,8 @@ Route::get('/warranties', [WarrantyController::class, 'index']);
 
 Route::post('/register', [AuthController::class, 'registerUser']);
 Route::post('/login', [AuthController::class, 'loginUser'])->name('login');
-
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 /*
 |--------------------------------------------------------------------------
@@ -114,8 +115,9 @@ Route::middleware(['auth:sanctum', 'sanctum.stateful'])->group(function () {
     Route::post('/users/{user}/demote', [UserController::class, 'demote']);
     Route::put('/users/{id}/permissions', [UserController::class, 'updatePermissions']);
 
-    // --- edit userProfile ---
+    // --- Edit User Profile & Password ---
     Route::put('/user/profile', [UserController::class, 'updateProfile']);
+    Route::put('/user/password', [UserController::class, 'updatePassword']);
 
     Route::apiResource('users', UserController::class);
 
