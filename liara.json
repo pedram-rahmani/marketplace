@@ -1,0 +1,8 @@
+{
+  "platform": "node",
+  "port": 3000,
+  "build": {
+    "context": "./frontend",
+    "command": "npm install && npm run build"
+  }
+}
