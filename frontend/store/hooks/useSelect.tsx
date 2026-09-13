@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function useSelect(isOpen, dataArr) {
+export default function useSelect(isOpen: boolean, dataArr: string[]) {
   const [openSelect, setOpenselect] = useState(isOpen);
   const [selectedOption, setSelectedOption] = useState("انتخاب کنید");
 
@@ -10,21 +10,18 @@ export default function useSelect(isOpen, dataArr) {
     selectBoxDropDown: openSelect ? "drop-down-active" : "",
   };
 
-  // Toggle select box visibility
   const openSelectBox = () => setOpenselect((prev) => !prev);
 
-  // Change selected option when an item is clicked
-  const changeOption = (e) => {
-    setSelectedOption(e.target.innerText);
-    setOpenselect(false); // Close the dropdown after selecting
+  const changeOption = (e: React.MouseEvent<HTMLLIElement>) => {
+    setSelectedOption(e.currentTarget.innerText);
+    setOpenselect(false);
   };
 
-  // Render dropdown items dynamically based on dataArr
   const selectBoxItem = (
     <ul
       className={`drop-down ${openSelect ? "drop-down-active h-[8.3rem]" : ""}`}
-      role="listbox" // Accessibility improvement
-      aria-expanded={openSelect} // Accessibility improvement
+      role="listbox"
+      aria-expanded={openSelect}
     >
       {dataArr.map((data) => (
         <li
@@ -33,7 +30,7 @@ export default function useSelect(isOpen, dataArr) {
           className={`drop-down-item ${
             selectedOption === data ? "drop-down-item-selected" : ""
           }`}
-          role="option" // Accessibility improvement
+          role="option"
         >
           {data}
           {selectedOption === data && (
@@ -46,5 +43,5 @@ export default function useSelect(isOpen, dataArr) {
     </ul>
   );
 
-  return [openSelectBox, selectBoxActive, selectBoxItem, selectedOption];
+  return [openSelectBox, selectBoxActive, selectBoxItem, selectedOption] as const;
 }
